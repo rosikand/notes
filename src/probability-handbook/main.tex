@@ -1,0 +1,113 @@
+\documentclass[11pt]{article}   
+
+% ---------------- Preamble --------------- 
+
+\usepackage[utf8]{inputenc}
+\usepackage{minted}
+\usepackage{color}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{outlines} 
+\usepackage{amsfonts} 
+\usepackage{mdframed}
+\usepackage{hyperref} 
+\usepackage[dvipsnames]{xcolor}
+\usepackage{color,soul}
+\usepackage{biblatex} % Imports biblatex package
+\usepackage{url}
+\addbibresource{references.bib} % Import the bibliography file
+
+
+% ---------------- Macros --------------- 
+
+% Theorems (source: http://dec41.user.srcf.net/notes/header.tex) 
+\theoremstyle{definition}
+\newtheorem*{aim}{Aim}
+\newtheorem*{axiom}{Axiom}
+\newtheorem*{claim}{Claim}
+\newtheorem*{cor}{Corollary}
+\newtheorem*{conjecture}{Conjecture}
+\newtheorem{df}{Definition}
+\newtheorem*{eg}{Example}
+\newtheorem*{ex}{Exercise}
+\newtheorem*{fact}{Fact}
+\newtheorem*{law}{Law}
+\newtheorem*{lemma}{Lemma}
+\newtheorem*{notation}{Notation}
+\newtheorem*{prop}{Proposition}
+\newtheorem*{question}{Question}
+\newtheorem*{thm}{Theorem}
+\newtheorem*{assumption}{Assumption}
+\newtheorem*{remark}{Remark}
+\newtheorem*{warning}{Warning}
+\newtheorem*{exercise}{Exercise}
+
+% Special sets
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\CP}{\mathbb{CP}}
+\newcommand{\GG}{\mathbb{G}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\RP}{\mathbb{RP}}
+\newcommand{\T}{\mathbb{T}}
+\newcommand{\Z}{\mathbb{Z}}
+\renewcommand{\H}{\mathbb{H}} 
+
+\NewDocumentCommand{\acode}{v}{%
+\texttt{\textcolor{Bittersweet}{#1}}%
+}
+
+\NewDocumentCommand{\ccode}{v}{%
+\texttt{\textcolor{blue}{#1}}%
+}
+
+
+\definecolor{lg}{gray}{0.97}
+
+\setminted{
+    tabsize=4,
+    autogobble,
+    mathescape,
+    breaklines,
+    % linenos,
+    % firstnumber=auto,
+    % numbersep=6pt,
+    % frame=single,
+    % framesep=4pt,
+    bgcolor=lg
+}
+
+
+% -------------------------------------
+
+\title{\textbf{Probability Theory Handbook}}
+\author{Rohan Sikand}
+\date{December 2021}
+
+
+
+\begin{document}
+
+\maketitle 
+\begin{abstract}
+
+This document contains a collection of important facts, definitions, theorems, examples, etc. about probability theory. It is intended to be short and to the point so that one can use it as a convenient reference\footnote{Indeed, part of the motivation for putting together this collection is so that I can refer to it later on may I forget some of the finer details.} (and to see the big picture between the results). Disclaimer: this document provides a collection of items which were not invented by the author and were collected from various sources. 
+\end{abstract}
+\tableofcontents
+\newpage
+
+% ------------- Content ----------------
+
+\input{content/chapter-1}
+\input{content/resources}
+
+% -------------------------------------
+
+
+\newpage
+\printbibliography % Prints bibliography
+
+
+\end{document}

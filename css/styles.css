@@ -1,0 +1,201 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box
+}
+
+body {
+	/* font-family: system-ui, Helvetica, Arial, sans-serif */
+    font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif; 
+	/* font-family: "Times New Roman", Times, serif; */
+	background-color: rgb(250,250,250);
+	/* Other colors I have considered: 
+		- (246,246,246)  
+		- (247,244,239)  
+	*/
+}
+
+#container {
+	width: 90%;
+	/* Width for the entire site */
+	max-width: 750px;
+	margin: 4rem auto
+}
+
+#container-course {
+	width: 90%;
+	/* Width for the entire site */
+	max-width: 705px;
+	margin: 4rem auto
+}
+
+.center {
+	margin: auto;
+	width: 50%;
+  }
+
+.three-quarter-center {
+	margin: auto;
+	width: 85%;
+  }
+
+nav {
+	margin: 1rem 0 1.5rem;
+}
+
+nav li {
+	list-style: none;
+	display: inline-block;
+	margin: 0
+}
+
+nav a {
+	margin-right: 1rem
+}
+
+h1,
+h2,
+h3 {
+	color: #333;
+	font-family: system-ui, Helvetica, Arial, sans-serif
+}
+
+h1 {
+	font-size: 2.5rem;
+	margin-top: 1rem
+}
+
+.global-title {
+	font-family: 'Merriweather', serif;
+	font-size: 2.7rem;
+	color: #222
+}
+
+h2 {
+	font-size: 1.8rem
+}
+
+h3 {
+	font-size: 1.3rem
+}
+
+h2,
+h3 {
+	margin: 1.2rem 0 1rem
+}
+
+.customh4 {
+	margin: 1.2rem 0 1rem
+}
+
+p,
+li {
+	font-size: 1rem;
+	line-height: 150%;
+	color: #444;
+	margin: 1.25rem 0
+}
+
+.p-description {
+	font-size: 1rem;
+	line-height: 150%;
+	color: #444;
+	margin: 0.1rem 0
+}
+
+li {
+	margin: 0.25rem 0 0 2.5rem
+}
+
+li:first-child {
+	margin-top: 0
+}
+
+a {
+	color: #b00; 
+    text-decoration: none; 
+}
+
+a:hover,
+a:active {
+	color: #e00
+}
+
+img {
+	max-width: 100%
+}
+
+.avatar {
+	width: 7rem;
+	height: 7rem;
+	border-radius: 4rem;
+	margin-right: 1.5rem
+}
+
+/* For using an image instead of an emoji in the header */
+.header-img {
+	width: 1.5rem;
+	height: 1.5rem;
+}
+
+.greeting-container {
+	display: flex
+}
+
+.greeting-container h3 {
+	align-self: center;
+	margin: 0
+}
+
+.posts-list-item {
+	list-style: none;
+	margin: 1.25rem 0
+}
+
+.posts-list-title {
+	margin-bottom: 0.75rem
+}
+
+.posts-list-item:first-of-type {
+	margin-top: 1.25rem
+}
+
+.posts-list-item .title {
+	margin: 0 0.25rem 0 0;
+	display: inline-block
+}
+
+.timestamp {
+	color: #676767
+}
+
+.timestamp-inline {
+	line-height: 1;
+	align-self: flex-end;
+	display: inline-block
+}
+
+.timestamp-block {
+	display: block;
+	margin-top: 0.75rem
+}
+
+code {
+	background: #ddd;
+	padding: 3px 5px;
+	border-radius: 2px;
+	font-family: Inconsolata, monospace
+}
+
+.main-content {
+    font-size: 1.1rem;
+}
+
+.footer-style {
+	font-size: 0.8rem;
+}
+
+.center-div {
+	margin-left: auto;
+	margin-right: auto;
+}

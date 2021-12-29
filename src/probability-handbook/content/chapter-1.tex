@@ -1,0 +1,54 @@
+\section{Probability Spaces} 
+
+Probability theory is a generalization of logical reasoning for randomness. We use mathematically structured sets to reason about real world phenomenon modelled by, what we call, \textbf{experiments} (random process). We formalize probability via probability spaces which are structured sets representing these experiments. 
+
+\begin{df}(\textbf{\hl{Probability Space}} \cite{deisenroth2020mathematics, enwiki:probabilityspace}) 
+A probability space, defined by the triple $(\Omega, \mathcal{F}, P)$, is a set with added structure which formally models a random experiment. A probability space consists of three elements:  
+\begin{enumerate}
+    \item \textbf{Sample space, $\Omega$}: the set of all possible outcomes of the experiment. The constituents of the experiment. 
+    \item \textbf{Event space, $\mathcal{F}$}: the set of all potential results (events) of the experiment. For discrete distributions, this is often the power set\footnote{Though this isn't always the case. For example, we may want to design an experiment such that certain events are restricted from occurring.} (set of all subsets) of $\Omega$. Events are often represented as capital letters (e.g. $A \in \mathcal{F}$). 
+    \item \textbf{Probability function, $P$}: a probability distribution/function/measure which assigns each event in the event space a probability, which is a number between $0$ and $1$. That is, for each event $A \in \mathcal{F}$, we associate a number using a function, $P(A)$, that measures the probability (frequentist) or degree of belief (Bayesian) that the event will occur. The result of $P(A)$ is then called the probability of $A$. We say that an event "occurs" in a trial if the outcome of that trial is an element of the specified event set. 
+\end{enumerate}
+\end{df}
+
+This is best illuminated via the following canonical example. 
+
+\begin{eg}
+Say we want to model the real world process of throwing a singular die. We define the sample space as all of the possible outcomes that the die can land on: $\Omega = \{1,2,3,4,5,6\}$. We define the event space as the power set of $\Omega$ which is the set of all events. Note that there is no construct in the definition which states the size of each subset needs to be the same\footnote{There is something called an elementary event which is an event consisting of exactly one outcome from $\Omega$. The point I am trying to make here is that there can exist events in the event space that are not elementary.}. For example, we could have the event $\{6\}$ meaning “the die lands on $6$” and we could also have the event $\{2,4,6\}$ meaning “the die lands on an even number”. Finally, we'd construct a probability function which maps each event in the event space to a probability. 
+
+\end{eg}
+
+It is important to note the distinction between the sample space and the event space. The sample space contains the \textit{outcomes} of the experiments. The event space contains the all of the \textit{sets} of possible outcomes (arranged in any fashion containing one or multiple elements) of the experiments. An outcome is a possible result of an experiment or trial \cite{enwiki:probabilityspace}. When we throw a die, it can only land on \textit{one} of six possible values. So of course, we can assign a probability to each of these six values, but we can also assign a value to any subset of these outcomes (i.e. the die lands on an odd number which would be a set of size $3$). Another way to think about events is to think of an event as some subset of the sample space that we ascribe meaning to (e.g. all even numbers) \cite{cs109reader}. It is important to be able to distinguish between an \href{https://en.wikipedia.org/wiki/Outcome_(probability)}{outcome} and an \href{https://en.wikipedia.org/wiki/Event_(probability_theory)}{event}\footnote{For more explanations, see \href{https://www.statology.org/outcome-vs-event/}{here} and \href{https://stats.stackexchange.com/questions/143459/are-the-terms-event-and-outcome-synonymous}{here}.}.   
+
+\begin{remark}(frequentist vs. Bayesian)
+Probability can be viewed from two different perspectives: from the frequentist perspective or the Bayesian perspective. At first thought, the frequentist perspective might seem more familiar and intuitive. But it doesn't encompass all possible phenomenon. The frequentist perspective is that the probability of each event in the event space occurring is the fraction of times that the event will occur if the experiment is repeated many (approaching infinite) times in real life \cite{math151notes}. Coin flipping and die rolling are two common examples. However, this perspective, as mentioned, does not cover experiments that are not repeatable. For example, what if we want to measure the probability that a candidate will win an election or if we want to measure the probability that a patient has a virus? In this case, we take the Bayesian approach meaning we think of probabilities as "beliefs that are updated according to some set of rules as new knowledge is acquired" \cite{math151notes}. For example, we can interpret the probability of the candidate winning the election as as quantification of a personal belief (subjectivity) and/or reasonable expectation based on our current knowledge \cite{enwiki:bayesianprobability}. 
+\end{remark}
+
+How do we know what types of functions can be used for probability functions (for probability spaces), $P$? What functions are valid probability functions? The requirements/constraints for $P$ are given by the Kolmogorov axioms defined below. 
+
+\begin{df}(\textbf{\hl{Axioms of Probability}} \cite{cs109reader}) 
+Let $(\Omega, \mathcal{F}, P)$ be a probability space and let $A$ and $B$ be events in the event space $\mathcal{F}$ ($A, B \in \mathcal{F}$). The probability function, $P$ must satisfy the following axioms which we accept as truth. 
+
+\begin{itemize}
+    \item \textbf{Axiom 1}: 
+    
+    $$0 \leq \mathrm{P}(A) \leq 1$$ 
+    
+    That is, the resulting probability must be a number between $0$ and $1$. 
+    
+    \item \textbf{Axiom 2}: $$P(\Omega)=1$$
+    
+    That is, the probability that at least one of the elementary events in the sample space will occur is 1 \cite{enwiki:probabilityspace}. Intuitively, this also means that all outcomes must be from the sample space, $\Omega$. Logically, this means that an outcome from any trial of the experiment will be in the sample space, $\Omega$.   
+    
+    \item \textbf{Axiom 3}: 
+    
+    $$\mathrm{P}(A \text { or } B)=\mathrm{P}(A)+\mathrm{P}(B)$$ 
+    
+    where $A$ and $B$ are mutually exclusive events (they cannot both occur at the same time\footnote{An example is coin tossing. A trial can result in heads or tails but not both.}). In words, this means that the probability of $A$ or $B$ occurring is the sum between the probability that $A$ will occur and the probability that $B$ will occur. This generalizes beyond just two events \cite{ross2014first}. Specifically, for any sequence of mutually exclusive events $(E_1, E_2,...)$:  
+    
+    $$
+    P\left(\bigcup_{i=1}^{\infty} E_{i}\right)=\sum_{i=1}^{\infty} P\left(E_{i}\right). 
+    $$ 
+\end{itemize} 
+\end{df} 
+
