@@ -1,0 +1,628 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Lecture 14: Automata </title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	text-indent: -1.7em;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, YuMincho, "Yu Mincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro", "Songti TC", "Songti SC", "SimSun", "Nanum Myeongjo", NanumMyeongjo, Batang, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC', 'Noto Sans CJK KR'; }
+
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC', 'Noto Sans Mono CJK KR'; }
+
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, YuMincho, "Yu Mincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro", "Songti TC", "Songti SC", "SimSun", "Nanum Myeongjo", NanumMyeongjo, Batang, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC', 'Noto Sans CJK KR'; }
+
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC', 'Noto Sans Mono CJK KR'; }
+
+.highlight-default {
+}
+.highlight-gray {
+	color: rgb(155,154,151);
+}
+.highlight-brown {
+	color: rgb(100,71,58);
+}
+.highlight-orange {
+	color: rgb(217,115,13);
+}
+.highlight-yellow {
+	color: rgb(223,171,1);
+}
+.highlight-teal {
+	color: rgb(15,123,108);
+}
+.highlight-blue {
+	color: rgb(11,110,153);
+}
+.highlight-purple {
+	color: rgb(105,64,165);
+}
+.highlight-pink {
+	color: rgb(173,26,114);
+}
+.highlight-red {
+	color: rgb(224,62,62);
+}
+.highlight-gray_background {
+	background: rgb(235,236,237);
+}
+.highlight-brown_background {
+	background: rgb(233,229,227);
+}
+.highlight-orange_background {
+	background: rgb(250,235,221);
+}
+.highlight-yellow_background {
+	background: rgb(251,243,219);
+}
+.highlight-teal_background {
+	background: rgb(221,237,234);
+}
+.highlight-blue_background {
+	background: rgb(221,235,241);
+}
+.highlight-purple_background {
+	background: rgb(234,228,242);
+}
+.highlight-pink_background {
+	background: rgb(244,223,235);
+}
+.highlight-red_background {
+	background: rgb(251,228,228);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(55, 53, 47, 0.6);
+	fill: rgba(55, 53, 47, 0.6);
+}
+.block-color-brown {
+	color: rgb(100,71,58);
+	fill: rgb(100,71,58);
+}
+.block-color-orange {
+	color: rgb(217,115,13);
+	fill: rgb(217,115,13);
+}
+.block-color-yellow {
+	color: rgb(223,171,1);
+	fill: rgb(223,171,1);
+}
+.block-color-teal {
+	color: rgb(15,123,108);
+	fill: rgb(15,123,108);
+}
+.block-color-blue {
+	color: rgb(11,110,153);
+	fill: rgb(11,110,153);
+}
+.block-color-purple {
+	color: rgb(105,64,165);
+	fill: rgb(105,64,165);
+}
+.block-color-pink {
+	color: rgb(173,26,114);
+	fill: rgb(173,26,114);
+}
+.block-color-red {
+	color: rgb(224,62,62);
+	fill: rgb(224,62,62);
+}
+.block-color-gray_background {
+	background: rgb(235,236,237);
+}
+.block-color-brown_background {
+	background: rgb(233,229,227);
+}
+.block-color-orange_background {
+	background: rgb(250,235,221);
+}
+.block-color-yellow_background {
+	background: rgb(251,243,219);
+}
+.block-color-teal_background {
+	background: rgb(221,237,234);
+}
+.block-color-blue_background {
+	background: rgb(221,235,241);
+}
+.block-color-purple_background {
+	background: rgb(234,228,242);
+}
+.block-color-pink_background {
+	background: rgb(244,223,235);
+}
+.block-color-red_background {
+	background: rgb(251,228,228);
+}
+.select-value-color-default { background-color: rgba(206,205,202,0.5); }
+.select-value-color-gray { background-color: rgba(155,154,151, 0.4); }
+.select-value-color-brown { background-color: rgba(140,46,0,0.2); }
+.select-value-color-orange { background-color: rgba(245,93,0,0.2); }
+.select-value-color-yellow { background-color: rgba(233,168,0,0.2); }
+.select-value-color-green { background-color: rgba(0,135,107,0.2); }
+.select-value-color-blue { background-color: rgba(0,120,223,0.2); }
+.select-value-color-purple { background-color: rgba(103,36,222,0.2); }
+.select-value-color-pink { background-color: rgba(221,0,129,0.2); }
+.select-value-color-red { background-color: rgba(255,0,26,0.2); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="405d1d54-1042-4066-aa14-0efae495e524" class="page serif"><header><h1 class="page-title">Lecture 14: Automata </h1><table class="properties"><tbody><tr class="property-row property-row-date"><th><span class="icon property-icon"><svg viewBox="0 0 14 14" style="width:14px;height:14px;display:block;fill:rgba(55, 53, 47, 0.4);flex-shrink:0;-webkit-backface-visibility:hidden" class="typesDate"><path d="M10.8889,5.5 L3.11111,5.5 L3.11111,7.05556 L10.8889,7.05556 L10.8889,5.5 Z M12.4444,1.05556 L11.6667,1.05556 L11.6667,0 L10.1111,0 L10.1111,1.05556 L3.88889,1.05556 L3.88889,0 L2.33333,0 L2.33333,1.05556 L1.55556,1.05556 C0.692222,1.05556 0.00777777,1.75556 0.00777777,2.61111 L0,12.5 C0,13.3556 0.692222,14 1.55556,14 L12.4444,14 C13.3,14 14,13.3556 14,12.5 L14,2.61111 C14,1.75556 13.3,1.05556 12.4444,1.05556 Z M12.4444,12.5 L1.55556,12.5 L1.55556,3.94444 L12.4444,3.94444 L12.4444,12.5 Z M8.55556,8.61111 L3.11111,8.61111 L3.11111,10.1667 L8.55556,10.1667 L8.55556,8.61111 Z"></path></svg></span>Date</th><td><time>@May 12, 2021</time></td></tr></tbody></table></header><div class="page-body"><nav id="b55422f9-4323-4326-bb1f-0d6e53a9bc2e" class="block-color-gray table_of_contents"><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#88dc41fe-019f-4f2b-b658-86243f47c715">Introduction </a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#2d8b2899-f59c-47d3-b380-57aeacc5b89e">Finite Automata</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#ea7f92c6-02df-4085-8230-514976ecce33">Problems</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#22573ca2-3560-426b-af2f-8312ada38fe0">Formal Language Theory </a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#7ffa710d-267f-47f1-a18a-04ac4b580a45">Finite State Machines</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#010bd094-b251-45ad-b0b4-eff4e81229bc">Designing Automata</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#421ad7fa-e8f8-4f53-92b1-575a962dcb8c">Determinism </a></div></nav><hr id="6fc90afc-b323-4309-98ba-0f674b2c163d"/><h3 id="88dc41fe-019f-4f2b-b658-86243f47c715" class="">Introduction </h3><p id="a413d352-5333-4347-b321-9a0a40af0410" class="">For introduction to FSA&#x27;s, view the relevant section in this PDF: </p><figure id="558072eb-7861-47c7-a0c4-d319ad52fce2"><div class="source"><a href="Lecture%2014%20Automata%20558072eb786147c7a0c4d319ad52fce2/main.pdf">https://s3-us-west-2.amazonaws.com/secure.notion-static.com/5e0c7448-83f3-4fcd-8af0-fe16d7e2df1c/main.pdf</a></div></figure><p id="ac01241d-c3a3-44e5-91bb-c5653a771973" class="">Briefly summarizing:</p><ul id="b5743ee8-22cf-4f5b-9899-1fc79d31c0d1" class="bulleted-list"><li>Computability theory revolves around the question: &quot;<mark class="highlight-yellow_background"><strong>What problems can we solve with a computer?</strong></mark>&quot;</li></ul><ul id="c617d20d-6878-4148-8a1e-d0acc2a225e2" class="bulleted-list"><li>To formulate mathematical proofs for what we can and cannot solve with computers, we need <strong>a general purpose model of a computer </strong>that represents any form of a computer. </li></ul><ul id="89f364d6-ae89-40c0-a021-6aa77e656f71" class="bulleted-list"><li>As such, we have <strong>automata</strong> which are <strong>mathematical models</strong> <strong>of computers</strong>.</li></ul><hr id="d6bcb11d-33f9-4382-8193-7978c7259eaf"/><h3 id="2d8b2899-f59c-47d3-b380-57aeacc5b89e" class="">Finite Automata</h3><ul id="ba7470e6-c9b1-4487-8697-72b74a155a48" class="bulleted-list"><li>A finite automaton is an automaton which a limited amount of memory. <ul id="58b6b713-7000-4559-a4e3-369839686615" class="bulleted-list"><li>Formally &quot;Finite automata are an abstraction of computers with<strong> finite resource constraints</strong>.&quot; </li></ul></li></ul><ul id="92785c11-94e9-4df4-a864-bcc78f615419" class="bulleted-list"><li>There are also Turing Machines, which we&#x27;ll discuss later on in the quarter that have an unbounded amount of resources. </li></ul><h3 id="ea7f92c6-02df-4085-8230-514976ecce33" class="">Problems</h3><ul id="08cbb76d-2990-4e05-88fc-7e8cb8a05d82" class="bulleted-list"><li>To reason about the question &quot;What problems can we solve with a computer?&quot;, we need to formally, and mathematically, define what exactly a &quot;problem&quot; is. </li></ul><ul id="33f1690c-e6a7-41a2-a5cb-851a90068204" class="bulleted-list"><li>Preferably, we want a definition of a problem that:<ul id="c827aec1-34ae-4d5a-94dc-a478250da1f2" class="bulleted-list"><li>Corresponds to the problems we want to solve,</li></ul><ul id="2c3a886e-aa6c-407a-b682-690707f074d5" class="bulleted-list"><li>*Captures a large class of problems, </li></ul><ul id="26c49eaa-2fc4-456e-8031-59a4e8089548" class="bulleted-list"><li>*Mathematically simple to reason about. </li></ul></li></ul><ul id="f31025c4-8522-4db9-9203-bc50ea79c471" class="bulleted-list"><li>However, no one definition perfectly covers all three. We&#x27;ll mainly focus on the last two (starred). </li></ul><h3 id="22573ca2-3560-426b-af2f-8312ada38fe0" class="">Formal Language Theory </h3><ul id="1b888bad-9f23-40d5-bde5-6e0d29cfc5fc" class="bulleted-list"><li><strong>Alphabet: a finite and nonempty set of symbols called characters. </strong><ul id="1ab0f7b8-8cd7-4c76-8d31-fd8e3faf6495" class="bulleted-list"><li>Defined using <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Σ</mi></mrow><annotation encoding="application/x-tex">\Sigma</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord">Σ</span></span></span></span></span><span>﻿</span></span>. </li></ul></li></ul><ul id="ca6e5209-3630-432f-b3d7-3df2aff79121" class="bulleted-list"><li><strong>A string over an alphabet </strong><strong><style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Σ</mi></mrow><annotation encoding="application/x-tex">\Sigma</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord">Σ</span></span></span></span></span><span>﻿</span></span></strong><strong> is a finite sequence of characters drawn from </strong><strong><style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Σ</mi></mrow><annotation encoding="application/x-tex">\Sigma</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord">Σ</span></span></span></span></span><span>﻿</span></span></strong><strong>. </strong></li></ul><figure id="cb1bae87-11e1-4b99-b800-6ea4c742174c" class="image"><a href="Lecture%2014%20Automata%20558072eb786147c7a0c4d319ad52fce2/Untitled.png"><img style="width:480px" src="Lecture%2014%20Automata%20558072eb786147c7a0c4d319ad52fce2/Untitled.png"/></a></figure><ul id="d1180d6b-bb8c-4f86-9e4c-391c71e05c62" class="bulleted-list"><li>We can also have an<strong> empty string</strong> which is symbolically represented as <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϵ</mi></mrow><annotation encoding="application/x-tex">\epsilon</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">ϵ</span></span></span></span></span><span>﻿</span></span>. </li></ul><ul id="34544d5f-ed83-4642-8395-f023795081a7" class="bulleted-list"><li>There is also <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∈</mo></mrow><annotation encoding="application/x-tex">\in</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">∈</span></span></span></span></span><span>﻿</span></span> which is &quot;element of&quot; like in set theory notation. </li></ul><p id="36fd7521-c195-4f84-a47d-59e9965759c8" class="">So what is a <strong>language</strong>?</p><ul id="ce718424-c1df-4fc4-9255-066d831f7c21" class="bulleted-list"><li>A formal language is simply put &quot;a set of strings&quot;. </li></ul><ul id="d4121ee1-3f13-4166-98cb-2a175e620579" class="bulleted-list"><li>More so, we say that a language <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi></mrow><annotation encoding="application/x-tex">L</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">L</span></span></span></span></span><span>﻿</span></span> is a language over an alphabet <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Σ</mi></mrow><annotation encoding="application/x-tex">\Sigma</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord">Σ</span></span></span></span></span><span>﻿</span></span> if all of the strings in the language are over that alphabet. </li></ul><ul id="21d520ef-8abc-4210-9ca5-8e6cb3d6458f" class="bulleted-list"><li>Example:  </li></ul><figure id="f09d80f7-2c93-4115-852c-f21af4fa1fea" class="image"><a href="Lecture%2014%20Automata%20558072eb786147c7a0c4d319ad52fce2/Untitled%201.png"><img style="width:384px" src="Lecture%2014%20Automata%20558072eb786147c7a0c4d319ad52fce2/Untitled%201.png"/></a><figcaption>Note that you repeat and reuse letters. </figcaption></figure><ul id="63b2eb4b-a481-49f5-9e2f-6080a75638b1" class="bulleted-list"><li>Furthermore, we define <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi mathvariant="normal">Σ</mi><mo>∗</mo></msup></mrow><annotation encoding="application/x-tex">\Sigma^*</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.688696em;vertical-align:0em;"></span><span class="mord"><span class="mord">Σ</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.688696em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">∗</span></span></span></span></span></span></span></span></span></span></span></span><span>﻿</span></span>as the set of <strong>all </strong>strings possible from the alphabet <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Σ</mi><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">\Sigma.</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord">Σ.</span></span></span></span></span><span>﻿</span></span> </li></ul><ul id="dc879f69-6943-45e2-b6bb-dfdba511e58d" class="bulleted-list"><li>This allows us to mathematically define a language as:<blockquote id="fc5a80bb-f33a-40ba-9fd2-999c110263cb" class=""><style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi></mrow><annotation encoding="application/x-tex">L</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">L</span></span></span></span></span><span>﻿</span></span> is a language over <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Σ</mi></mrow><annotation encoding="application/x-tex">\Sigma</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord">Σ</span></span></span></span></span><span>﻿</span></span> if <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>⊆</mo><mi mathvariant="normal">Σ</mi><mo>∗</mo></mrow><annotation encoding="application/x-tex">L\subseteq \Sigma*</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8193em;vertical-align:-0.13597em;"></span><span class="mord mathnormal">L</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">⊆</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord">Σ</span><span class="mord">∗</span></span></span></span></span><span>﻿</span></span>. </blockquote></li></ul><ul id="651ce41e-7525-4cba-8fc0-c1eb8030eb48" class="bulleted-list"><li>So essentially, a language over some alphabet is simply some set of strings over the alphabet which is a subset of all possible strings from that alphabet. </li></ul><p id="152a8f57-3e67-467f-bec4-c79e3933bf27" class="">So in summary: </p><figure id="53464362-77e3-4da7-a72d-bc50b6977302" class="image"><a href="Lecture%2014%20Automata%20558072eb786147c7a0c4d319ad52fce2/Untitled%202.png"><img style="width:336px" src="Lecture%2014%20Automata%20558072eb786147c7a0c4d319ad52fce2/Untitled%202.png"/></a></figure><hr id="010462fb-f467-4280-b97f-37b62b42c93b"/><h2 id="7ffa710d-267f-47f1-a18a-04ac4b580a45" class="">Finite State Machines</h2><ul id="00af95c5-c39b-4b61-889e-3546d8b3e02b" class="bulleted-list"><li>Back to the question of computability theory, we say that a &quot;problem&quot; is just some formal language. <ul id="87bddb25-911d-40d2-ba91-593ce68e735c" class="bulleted-list"><li>Now you might be thinking how the heck we represent problems by using a formal language. This is best explained through an example: say we had the problem of identifying if a mathematical expression is correct. We can define some language which contains all the correct mathematical expressions and then simply check to see if the given expression (which would be represented as a string) is indeed in the language. </li></ul><ul id="8cad390d-32a3-4863-a20d-10561995a7b8" class="bulleted-list"><li>Formally: &quot;<strong>Given a string, is such a string contained in the stated language?&quot;</strong>. </li></ul></li></ul><p id="e6980fb3-3492-4da2-971e-95feaaaa5f4a" class="">Now how can we define some &quot;computer&quot; to solve these problems (or not)?: </p><blockquote id="9c861cfe-f487-408d-9a3c-af54c06935ff" class="">A <strong>finite automaton</strong> is a simple type of mathematical machine for determining whether a string is contained within some language.</blockquote><ul id="6c2b02f3-5c90-459d-b703-92661633c8c1" class="bulleted-list"><li>An FA has these things called &quot;<strong>states</strong>&quot; which are connected through these things called <strong>&quot;transistors</strong>&quot;. </li></ul><ul id="0a5fcfe9-a521-4d0a-9022-3d87cb1f6ede" class="bulleted-list"><li>They look like this: <figure id="db67f813-fddf-4501-955b-6a50c87bfdb5" class="image"><a href="Lecture%2014%20Automata%20558072eb786147c7a0c4d319ad52fce2/Untitled%203.png"><img style="width:336px" src="Lecture%2014%20Automata%20558072eb786147c7a0c4d319ad52fce2/Untitled%203.png"/></a><figcaption>Nodes are states. Transistors are edges. </figcaption></figure></li></ul><ul id="ab07e296-5852-48a5-90e6-19f901178b2f" class="bulleted-list"><li>There are two special types of states:<ul id="45704109-b192-4db2-a007-64346a245c41" class="bulleted-list"><li><strong>Start</strong> state</li></ul><ul id="07279eb8-1b4b-430d-9bbc-d60769aa129c" class="bulleted-list"><li><strong>Accept</strong> state (noted by double ring)</li></ul></li></ul><ul id="0e6c60e4-831e-494c-b3df-158d66de999d" class="bulleted-list"><li>Note that you can also have this thing called a &quot;sigma&quot; transition which is represented by <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Σ</mi></mrow><annotation encoding="application/x-tex">\Sigma</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord">Σ</span></span></span></span></span><span>﻿</span></span> and means the total alphabet. </li></ul><ul id="fbb3ec55-158a-4606-a282-4e0da08bd409" class="bulleted-list"><li>Given some language, you travel along the FA, starting at the start state, and if you end up at an accept state, then you &quot;accept&quot; the input string. <ul id="7d306164-ad87-4d2e-91b3-87fca2ce28fb" class="bulleted-list"><li>So in some sense, there is this mechanical tracing process you follow (it is like a guided maze!). <ul id="6ed5f8a3-8b03-4b1a-91e8-dae871d1e877" class="bulleted-list"><li>See (35:00) for how to trace.</li></ul></li></ul></li></ul><p id="34fc1001-4c5b-4975-a1f3-0f51949e71fe" class="">Summarizing thus far: </p><figure id="c41f843c-3247-4a53-8e4f-78c0bb1d92e7" class="image"><a href="Lecture%2014%20Automata%20558072eb786147c7a0c4d319ad52fce2/Untitled%204.png"><img style="width:432px" src="Lecture%2014%20Automata%20558072eb786147c7a0c4d319ad52fce2/Untitled%204.png"/></a></figure><h3 id="010bd094-b251-45ad-b0b4-eff4e81229bc" class="">Designing Automata</h3><ul id="062211ab-eb93-43a6-b138-f02146352632" class="bulleted-list"><li>You would ideally want to design your automata such that it answers the problem you are working with. </li></ul><p id="a158f89c-73b1-46b5-bd75-8d3e2da7b10a" class="">We introduce the notion of a <strong>&quot;language of an automaton&quot;</strong>:</p><blockquote id="f9ea0bbb-20ae-4436-b472-6f5b455abd8a" class="">A <strong>language of an automaton </strong>is the set of all accepted strings of that automaton  </blockquote><p id="9929e0ff-bdd7-4177-9012-c00b3cc2da45" class="">Note: remember that we operate over strings when tracing through automata. The language is a set of all possible strings that would be accepted. </p><p id="64059251-e1a0-4bdc-a405-2794080f1edc" class="">Formally, we define such as:</p><p id="7161da21-ef12-47a5-9065-6a4a6c030475" class="">If <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi></mrow><annotation encoding="application/x-tex">D</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span></span></span><span>﻿</span></span> is an automaton that processes characters from the alphabet <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Σ</mi></mrow><annotation encoding="application/x-tex">\Sigma</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord">Σ</span></span></span></span></span><span>﻿</span></span>, then <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="script">L</mi><mo stretchy="false">(</mo><mi mathvariant="bold-italic">D</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\mathscr{L}(\boldsymbol{D})</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathscr" style="margin-right:0.19189em;">L</span><span class="mopen">(</span><span class="mord"><span class="mord"><span class="mord boldsymbol" style="margin-right:0.03194em;">D</span></span></span><span class="mclose">)</span></span></span></span></span><span>﻿</span></span> is formally defined as</p><figure id="81ecb896-f4ea-4f3f-afbe-d0bc51111a59" class="equation"><style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><div class="equation-container"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi mathvariant="script">L</mi><mo stretchy="false">(</mo><mi mathvariant="bold-italic">D</mi><mo stretchy="false">)</mo><mo>=</mo><mrow><mo fence="true">{</mo><mi mathvariant="bold-italic">w</mi><mo>∈</mo><msup><mi mathvariant="bold">Σ</mi><mo lspace="0em" rspace="0em">∗</mo></msup><mo>∣</mo><mi mathvariant="bold-italic">D</mi><mtext> accepts </mtext><mi mathvariant="bold-italic">w</mi><mo fence="true">}</mo></mrow></mrow><annotation encoding="application/x-tex">\mathscr{L}(\boldsymbol{D})=\left\{\boldsymbol{w} \in \boldsymbol{\Sigma}^{*} \mid \boldsymbol{D} \text { accepts } \boldsymbol{w}\right\}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathscr" style="margin-right:0.19189em;">L</span><span class="mopen">(</span><span class="mord"><span class="mord"><span class="mord boldsymbol" style="margin-right:0.03194em;">D</span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.0147059999999999em;vertical-align:-0.25em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;">{</span><span class="mord"><span class="mord"><span class="mord boldsymbol" style="margin-right:0.02778em;">w</span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">∈</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord"><span class="mord"><span class="mord"><span class="mord mathbf">Σ</span></span></span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.764706em;"><span style="top:-3.1390100000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">∗</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">∣</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord"><span class="mord"><span class="mord boldsymbol" style="margin-right:0.03194em;">D</span></span></span><span class="mord text"><span class="mord"> accepts </span></span><span class="mord"><span class="mord"><span class="mord boldsymbol" style="margin-right:0.02778em;">w</span></span></span><span class="mclose delimcenter" style="top:0em;">}</span></span></span></span></span></span></div></figure><ul id="45e0cff2-d126-449c-a4bb-6f143120d4dc" class="bulleted-list"><li>So ideally, if we were designing automata for a particular, we&#x27;d need to align <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="script">L</mi><mo stretchy="false">(</mo><mi mathvariant="bold-italic">D</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\mathscr{L}(\boldsymbol{D})</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathscr" style="margin-right:0.19189em;">L</span><span class="mopen">(</span><span class="mord"><span class="mord"><span class="mord boldsymbol" style="margin-right:0.03194em;">D</span></span></span><span class="mclose">)</span></span></span></span></span><span>﻿</span></span> with the accepted answers to the problem. </li></ul><p id="ec61afc2-fd65-4b91-8083-ba8f9e8acba3" class=""><strong>Ok but like how do you methodologically design an automaton? </strong></p><ul id="4eaa960e-461c-4e34-9577-c44d05d4f1ce" class="bulleted-list"><li>A good intuition to have is to simulate the functionalities of memory. FSA&#x27;s don&#x27;t have any memory, but using some clever tricks we can simulate it. </li></ul><p id="299f8a3e-4f85-438c-becb-2d20a43b32dc" class="">Best explained through example:</p><p id="52d746eb-2183-4af6-a30c-d7f3322467f9" class=""> Say you have this language in which you need to define some automaton for: </p><figure id="6defda9d-6682-46fe-b37c-91635fe9d074" class="image"><a href="Lecture%2014%20Automata%20558072eb786147c7a0c4d319ad52fce2/Untitled%205.png"><img style="width:2554px" src="Lecture%2014%20Automata%20558072eb786147c7a0c4d319ad52fce2/Untitled%205.png"/></a></figure><p id="0b6a611e-2286-4cc8-9e6b-88b1f919aa87" class="">This is saying to design an FSA which only accepts strings from <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi mathvariant="normal">Σ</mi><mo>∗</mo></msup></mrow><annotation encoding="application/x-tex">\Sigma^*</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.688696em;vertical-align:0em;"></span><span class="mord"><span class="mord">Σ</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.688696em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">∗</span></span></span></span></span></span></span></span></span></span></span></span><span>﻿</span></span> which contain a number of b&#x27;s that is congruent to 2 mod 3. We design the FSA as follows:</p><ul id="3db27aa7-56ce-48a8-a1b0-af3207269460" class="bulleted-list"><li>We keep track of b&#x27;s by moving one state (see how we are keeping track of memory?). </li></ul><ul id="9bd37af2-3ad5-4d64-b11e-60c2755e4b9a" class="bulleted-list"><li>If the current character is an a, then we self-loop so it is not &quot;counted&quot; in our memory system. </li></ul><ul id="326af52a-11de-41d0-aef5-74b139059b43" class="bulleted-list"><li>We also only have a <em>finite </em>(hence &quot;finite&quot; state machine) number of resources so we loop around past the accepting state. </li></ul><p id="590be106-ae88-44a1-b248-acc21dbd207c" class="">Overall, it looks like this: </p><figure id="8a89ef8f-bdf5-4bbc-beac-977b318d9f42" class="image"><a href="Lecture%2014%20Automata%20558072eb786147c7a0c4d319ad52fce2/Untitled%206.png"><img style="width:288px" src="Lecture%2014%20Automata%20558072eb786147c7a0c4d319ad52fce2/Untitled%206.png"/></a></figure><p id="d13faca8-8a6d-420d-9f22-aa6a597f8d43" class="">View the last minutes of lecture for a visual explanation. </p><h3 id="421ad7fa-e8f8-4f53-92b1-575a962dcb8c" class="">Determinism </h3><p id="affdde0f-3c06-4ba9-9251-34b7586dcad7" class="">Consider a case where you have this automaton:</p><figure id="9b78112f-3172-4b3f-9dbe-9b291716de49" class="image"><a href="Lecture%2014%20Automata%20558072eb786147c7a0c4d319ad52fce2/Untitled%207.png"><img style="width:240px" src="Lecture%2014%20Automata%20558072eb786147c7a0c4d319ad52fce2/Untitled%207.png"/></a><figcaption>Notice that there are transitions that don&#x27;t include 1s or 0s transitions in certain directions. This is a problem in regards to what we know so far. What would you do if you started with a 1? </figcaption></figure><p id="7ba2e8a3-df82-4d9d-89a4-40b2efa2077c" class="">More so, consider this automaton: </p><figure id="fffeb4eb-114e-4bd5-a0d5-91dd059609cd" class="image"><a href="Lecture%2014%20Automata%20558072eb786147c7a0c4d319ad52fce2/Untitled%208.png"><img style="width:240px" src="Lecture%2014%20Automata%20558072eb786147c7a0c4d319ad52fce2/Untitled%208.png"/></a><figcaption>Notice that on the q_1 state, there would be two options for 0. </figcaption></figure><p id="d7494b87-57ad-4b5c-b0c3-9ab470eaa8f8" class="">These two particular automata fall under the category of &quot;Nondeterministic Automata&quot;. We will discuss these later on. In this particular lesson and the next few, we only deal with <strong>Deterministic Finite Automata </strong>which don&#x27;t have these problems. More specifically, we define a DFA as having the following characteristics: </p><figure id="1b80bf77-e62b-4f37-9838-d890759dcb06" class="image"><a href="Lecture%2014%20Automata%20558072eb786147c7a0c4d319ad52fce2/Untitled%209.png"><img style="width:480px" src="Lecture%2014%20Automata%20558072eb786147c7a0c4d319ad52fce2/Untitled%209.png"/></a></figure></div></article></body></html>

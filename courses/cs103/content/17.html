@@ -1,0 +1,629 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Lecture 17 TLDR: Regular Expressions </title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	text-indent: -1.7em;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, YuMincho, "Yu Mincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro", "Songti TC", "Songti SC", "SimSun", "Nanum Myeongjo", NanumMyeongjo, Batang, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC', 'Noto Sans CJK KR'; }
+
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC', 'Noto Sans Mono CJK KR'; }
+
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, YuMincho, "Yu Mincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro", "Songti TC", "Songti SC", "SimSun", "Nanum Myeongjo", NanumMyeongjo, Batang, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC', 'Noto Sans CJK KR'; }
+
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC', 'Noto Sans Mono CJK KR'; }
+
+.highlight-default {
+}
+.highlight-gray {
+	color: rgb(155,154,151);
+}
+.highlight-brown {
+	color: rgb(100,71,58);
+}
+.highlight-orange {
+	color: rgb(217,115,13);
+}
+.highlight-yellow {
+	color: rgb(223,171,1);
+}
+.highlight-teal {
+	color: rgb(15,123,108);
+}
+.highlight-blue {
+	color: rgb(11,110,153);
+}
+.highlight-purple {
+	color: rgb(105,64,165);
+}
+.highlight-pink {
+	color: rgb(173,26,114);
+}
+.highlight-red {
+	color: rgb(224,62,62);
+}
+.highlight-gray_background {
+	background: rgb(235,236,237);
+}
+.highlight-brown_background {
+	background: rgb(233,229,227);
+}
+.highlight-orange_background {
+	background: rgb(250,235,221);
+}
+.highlight-yellow_background {
+	background: rgb(251,243,219);
+}
+.highlight-teal_background {
+	background: rgb(221,237,234);
+}
+.highlight-blue_background {
+	background: rgb(221,235,241);
+}
+.highlight-purple_background {
+	background: rgb(234,228,242);
+}
+.highlight-pink_background {
+	background: rgb(244,223,235);
+}
+.highlight-red_background {
+	background: rgb(251,228,228);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(55, 53, 47, 0.6);
+	fill: rgba(55, 53, 47, 0.6);
+}
+.block-color-brown {
+	color: rgb(100,71,58);
+	fill: rgb(100,71,58);
+}
+.block-color-orange {
+	color: rgb(217,115,13);
+	fill: rgb(217,115,13);
+}
+.block-color-yellow {
+	color: rgb(223,171,1);
+	fill: rgb(223,171,1);
+}
+.block-color-teal {
+	color: rgb(15,123,108);
+	fill: rgb(15,123,108);
+}
+.block-color-blue {
+	color: rgb(11,110,153);
+	fill: rgb(11,110,153);
+}
+.block-color-purple {
+	color: rgb(105,64,165);
+	fill: rgb(105,64,165);
+}
+.block-color-pink {
+	color: rgb(173,26,114);
+	fill: rgb(173,26,114);
+}
+.block-color-red {
+	color: rgb(224,62,62);
+	fill: rgb(224,62,62);
+}
+.block-color-gray_background {
+	background: rgb(235,236,237);
+}
+.block-color-brown_background {
+	background: rgb(233,229,227);
+}
+.block-color-orange_background {
+	background: rgb(250,235,221);
+}
+.block-color-yellow_background {
+	background: rgb(251,243,219);
+}
+.block-color-teal_background {
+	background: rgb(221,237,234);
+}
+.block-color-blue_background {
+	background: rgb(221,235,241);
+}
+.block-color-purple_background {
+	background: rgb(234,228,242);
+}
+.block-color-pink_background {
+	background: rgb(244,223,235);
+}
+.block-color-red_background {
+	background: rgb(251,228,228);
+}
+.select-value-color-default { background-color: rgba(206,205,202,0.5); }
+.select-value-color-gray { background-color: rgba(155,154,151, 0.4); }
+.select-value-color-brown { background-color: rgba(140,46,0,0.2); }
+.select-value-color-orange { background-color: rgba(245,93,0,0.2); }
+.select-value-color-yellow { background-color: rgba(233,168,0,0.2); }
+.select-value-color-green { background-color: rgba(0,135,107,0.2); }
+.select-value-color-blue { background-color: rgba(0,120,223,0.2); }
+.select-value-color-purple { background-color: rgba(103,36,222,0.2); }
+.select-value-color-pink { background-color: rgba(221,0,129,0.2); }
+.select-value-color-red { background-color: rgba(255,0,26,0.2); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="afbf3c1a-839a-4b3b-96f9-8ec2ef6fc5c1" class="page serif"><header><h1 class="page-title">Lecture 17 TLDR: Regular Expressions </h1><table class="properties"><tbody><tr class="property-row property-row-date"><th><span class="icon property-icon"><svg viewBox="0 0 14 14" style="width:14px;height:14px;display:block;fill:rgba(55, 53, 47, 0.4);flex-shrink:0;-webkit-backface-visibility:hidden" class="typesDate"><path d="M10.8889,5.5 L3.11111,5.5 L3.11111,7.05556 L10.8889,7.05556 L10.8889,5.5 Z M12.4444,1.05556 L11.6667,1.05556 L11.6667,0 L10.1111,0 L10.1111,1.05556 L3.88889,1.05556 L3.88889,0 L2.33333,0 L2.33333,1.05556 L1.55556,1.05556 C0.692222,1.05556 0.00777777,1.75556 0.00777777,2.61111 L0,12.5 C0,13.3556 0.692222,14 1.55556,14 L12.4444,14 C13.3,14 14,13.3556 14,12.5 L14,2.61111 C14,1.75556 13.3,1.05556 12.4444,1.05556 Z M12.4444,12.5 L1.55556,12.5 L1.55556,3.94444 L12.4444,3.94444 L12.4444,12.5 Z M8.55556,8.61111 L3.11111,8.61111 L3.11111,10.1667 L8.55556,10.1667 L8.55556,8.61111 Z"></path></svg></span>Date</th><td><time>@May 21, 2021</time></td></tr></tbody></table></header><div class="page-body"><ul id="1e4cdedf-8994-4011-9780-d5538520e45c" class="bulleted-list"><li>We will focus on the building up regular languages from smaller ones via closure properties. </li></ul><ul id="b5081cf4-56ee-4c73-b171-c8058a7f0a8c" class="bulleted-list"><li>The way we do this is via regular expressions. </li></ul><blockquote id="ba7631fa-6fae-46f3-809e-8282fcdcdf6a" class=""><strong>Regular expressions </strong>are a way of describing a language via a string representation.</blockquote><h3 id="87d60cb0-5293-468f-b9d8-14ce6321e4d8" class="">Atomic RE&#x27;s</h3><p id="3a672fb1-4ca0-4cab-bdc0-bd6c79a0ef3d" class="">These are the fundamental units to which we can build every language from: </p><figure id="cd6e8e2e-2b87-4b0a-bd54-d9170b4d1264" class="image"><a href="Lecture%2017%20TLDR%20Regular%20Expressions%20cd6e8e2e2b874b0abd54d9170b4d1264/Untitled.png"><img style="width:192px" src="Lecture%2017%20TLDR%20Regular%20Expressions%20cd6e8e2e2b874b0abd54d9170b4d1264/Untitled.png"/></a><figcaption>Left is RegEx and right is what it means in language via set theory </figcaption></figure><h3 id="87267ed5-3918-4972-8000-612af6a4c240" class="">Closure properties (compounding) </h3><p id="015be713-4177-4cc1-917a-fa1675eb4def" class="">Three closure properties (everything else is a derivative): </p><ul id="4dd3f78a-5844-4873-93bf-09f715c57ec4" class="bulleted-list"><li>Can compound these atomic units to form larger expressions by <strong>concatenating</strong> them. Example: </li></ul><figure id="03703e7d-619b-49aa-a24b-49d872971e70" class="image"><a href="Lecture%2017%20TLDR%20Regular%20Expressions%20cd6e8e2e2b874b0abd54d9170b4d1264/Untitled%201.png"><img style="width:240px" src="Lecture%2017%20TLDR%20Regular%20Expressions%20cd6e8e2e2b874b0abd54d9170b4d1264/Untitled%201.png"/></a></figure><p id="fbd845ba-a825-4652-a567-66f2b22f89db" class="">Other compounding actions are through the following properties. </p><ul id="d9cad95b-40da-4abd-b23a-610949144087" class="bulleted-list"><li><strong>Union</strong></li></ul><figure id="8fba387b-9972-49bc-a023-d79e28574258" class="image"><a href="Lecture%2017%20TLDR%20Regular%20Expressions%20cd6e8e2e2b874b0abd54d9170b4d1264/Untitled%202.png"><img style="width:240px" src="Lecture%2017%20TLDR%20Regular%20Expressions%20cd6e8e2e2b874b0abd54d9170b4d1264/Untitled%202.png"/></a></figure><ul id="1bd114c5-1549-4b0b-a6cd-cda0296af39b" class="bulleted-list"><li><strong>Kleene&#x27;s Closure </strong></li></ul><figure id="3502e035-297e-45e0-a71b-6c12275974bb" class="image"><a href="Lecture%2017%20TLDR%20Regular%20Expressions%20cd6e8e2e2b874b0abd54d9170b4d1264/Untitled%203.png"><img style="width:288px" src="Lecture%2017%20TLDR%20Regular%20Expressions%20cd6e8e2e2b874b0abd54d9170b4d1264/Untitled%203.png"/></a></figure><h3 id="50c2c00e-4ff8-4ac5-9b6e-1e6150393307" class="">Operator precedence</h3><p id="acf4be23-53df-40ee-a240-72f2c8463691" class="">Remember, RegEx is a <em>string representation</em><strong><em> </em></strong>of languages. It evaluates like a mathematical expression so we need some order of precedence which we define as the following: </p><figure id="8be18fbe-c320-4a6f-9ae2-757e200bbf4c" class="image"><a href="Lecture%2017%20TLDR%20Regular%20Expressions%20cd6e8e2e2b874b0abd54d9170b4d1264/Untitled%204.png"><img style="width:108px" src="Lecture%2017%20TLDR%20Regular%20Expressions%20cd6e8e2e2b874b0abd54d9170b4d1264/Untitled%204.png"/></a><figcaption>Note that the first means parantheses </figcaption></figure><p id="75c9c8e4-fc13-4eb1-b940-912c9b2ac6d1" class="">Example: </p><figure id="dc3f29cf-716e-4064-8e1a-86e13545d370" class="image"><a href="Lecture%2017%20TLDR%20Regular%20Expressions%20cd6e8e2e2b874b0abd54d9170b4d1264/Untitled%205.png"><img style="width:384px" src="Lecture%2017%20TLDR%20Regular%20Expressions%20cd6e8e2e2b874b0abd54d9170b4d1264/Untitled%205.png"/></a></figure><p id="9948b763-cb55-45e6-8a68-667eafcda6fd" class="">Also important to realize that RegEx closure operators operate via individual characters and not the entire string. For example, in <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mi>o</mi><msup><mi>o</mi><mo>∗</mo></msup></mrow><annotation encoding="application/x-tex">boo^*</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal">b</span><span class="mord mathnormal">o</span><span class="mord"><span class="mord mathnormal">o</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.688696em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">∗</span></span></span></span></span></span></span></span></span></span></span></span><span>﻿</span></span>, only the last o can be kleene starred and not the whole string. </p><h2 id="4a932859-7663-4336-9eed-dd831ecb7fa0" class="">Designing RegEx&#x27;s </h2><p id="28352502-542c-4064-bb5f-d3d771bba67c" class="">Can also design them from alphabets and languages (see <code>30:00</code>). Here is an example: </p><figure id="18620d74-ce7f-41d3-bba0-7fc6038f28f5" class="image"><a href="Lecture%2017%20TLDR%20Regular%20Expressions%20cd6e8e2e2b874b0abd54d9170b4d1264/Untitled%206.png"><img style="width:384px" src="Lecture%2017%20TLDR%20Regular%20Expressions%20cd6e8e2e2b874b0abd54d9170b4d1264/Untitled%206.png"/></a></figure><p id="8de0714b-4468-490d-ad91-18e41da9df47" class="">See middle of lecture for more examples. </p><h3 id="a9967d18-e4e5-4db8-954a-820a0ff367c1" class="">Some more notation </h3><ul id="aef1ec3f-fbbd-4c8d-a195-ed7e4cb4a687" class="bulleted-list"><li>Note something: <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><mi>E</mi><mi>E</mi><mi>E</mi></mrow><annotation encoding="application/x-tex">EEEE</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">EEEE</span></span></span></span></span><span>﻿</span></span> can be written as <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>E</mi><mn>4</mn></msup></mrow><annotation encoding="application/x-tex">E^4</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">4</span></span></span></span></span></span></span></span></span></span></span></span><span>﻿</span></span>. </li></ul><ul id="853a3415-e5ae-4423-b7ce-f81665b077ee" class="bulleted-list"><li>Another new notation: we can implement &quot;optional&quot; characters via the <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">?</mo></mrow><annotation encoding="application/x-tex">?</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mclose">?</span></span></span></span></span><span>﻿</span></span> notation (meaning choose if you want). Example: <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>b</mi><mo lspace="0em" rspace="0em">∗</mo></msup><mi>a</mi><mo stretchy="false">?</mo><msup><mi>b</mi><mo lspace="0em" rspace="0em">∗</mo></msup></mrow><annotation encoding="application/x-tex">b^{*} a ? b^{*}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord"><span class="mord mathnormal">b</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.688696em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">∗</span></span></span></span></span></span></span></span></span><span class="mord mathnormal">a</span><span class="mclose">?</span><span class="mord"><span class="mord mathnormal">b</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.688696em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">∗</span></span></span></span></span></span></span></span></span></span></span></span></span><span>﻿</span></span> where <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi></mrow><annotation encoding="application/x-tex">a</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">a</span></span></span></span></span><span>﻿</span></span> is optional. </li></ul><ul id="bff8e350-d3b7-420b-9cd7-ff30277a0075" class="bulleted-list"><li>Kleene plus operator: <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>a</mi><mo>+</mo></msup></mrow><annotation encoding="application/x-tex">a^+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.771331em;vertical-align:0em;"></span><span class="mord"><span class="mord mathnormal">a</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.771331em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">+</span></span></span></span></span></span></span></span></span></span></span></span><span>﻿</span></span> means &quot;one or more <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi></mrow><annotation encoding="application/x-tex">a</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">a</span></span></span></span></span><span>﻿</span></span>&#x27;s&quot;. </li></ul><h3 id="b3a82337-2b8a-48a2-97b7-c995eb378884" class="">Some results (proofs)</h3><figure id="061299fe-e2b4-4140-a021-d95043640072" class="image"><a href="Lecture%2017%20TLDR%20Regular%20Expressions%20cd6e8e2e2b874b0abd54d9170b4d1264/Untitled%207.png"><img style="width:384px" src="Lecture%2017%20TLDR%20Regular%20Expressions%20cd6e8e2e2b874b0abd54d9170b4d1264/Untitled%207.png"/></a><figcaption>Should make some sense. I mean the name is &quot;regular&quot; after all. </figcaption></figure><p id="596f766f-4707-4b8c-8a5d-333387444392" class="">We also have another result which is the reverse (which isn&#x27;t as obvious):</p><figure id="c66a1d54-34bc-416b-8c1b-6a5339dd6309" class="image"><a href="Lecture%2017%20TLDR%20Regular%20Expressions%20cd6e8e2e2b874b0abd54d9170b4d1264/Untitled%208.png"><img style="width:384px" src="Lecture%2017%20TLDR%20Regular%20Expressions%20cd6e8e2e2b874b0abd54d9170b4d1264/Untitled%208.png"/></a></figure><p id="762ca92f-df28-40b4-8ac3-6dde4554f042" class="">Why so: </p><ul id="0ea44249-7b6e-4b9c-b1b6-8bbcc814f213" class="bulleted-list"><li>We only have three atomic units with three basic operators when working with RegEx&#x27;s so if you have some complex finite state machine, then it can be very hard to pull out an RegEx out of your hat. Though, by theory, this should be possible since RegEx&#x27;s represent regular languages in string form. </li></ul><p id="298c87a8-f781-4822-b70f-65cf363044a2" class="">Essentially, the proof would use this intuition:</p><figure id="9c5d28c7-a757-4ad0-9874-0dbc5cc14934" class="image"><a href="Lecture%2017%20TLDR%20Regular%20Expressions%20cd6e8e2e2b874b0abd54d9170b4d1264/Untitled%209.png"><img style="width:336px" src="Lecture%2017%20TLDR%20Regular%20Expressions%20cd6e8e2e2b874b0abd54d9170b4d1264/Untitled%209.png"/></a></figure><p id="7fe71b60-d975-450a-948a-57de3e8ee1fd" class="">More so: </p><ul id="84dd2b0d-b0ea-435d-853d-da1406a0f719" class="bulleted-list"><li>Notice that all transition labels of an NFA sort of function like RegEx&#x27;s. <ul id="2fb89bbe-9644-4c7b-9897-69e638b1ac4f" class="bulleted-list"><li>As a thought experiment, label all transitions with RegEx&#x27;s (which isn&#x27;t legal though, but hypothetically think). </li></ul></li></ul><ul id="42530c84-8183-4138-b45a-28cec4b8096e" class="bulleted-list"><li>Then, somehow get your NFA to be of one transition and two states: </li></ul><figure id="d8666207-9609-435c-8db7-8649743c3dc4" class="image"><a href="Lecture%2017%20TLDR%20Regular%20Expressions%20cd6e8e2e2b874b0abd54d9170b4d1264/Untitled%2010.png"><img style="width:336px" src="Lecture%2017%20TLDR%20Regular%20Expressions%20cd6e8e2e2b874b0abd54d9170b4d1264/Untitled%2010.png"/></a><figcaption>Do this by eliminating states via building up RegEx&#x27;s </figcaption></figure><p id="873a4ac5-f6f0-4f52-893e-9fb495d5b661" class="">
+</p><p id="2d7e7c6b-f1a4-4181-b98d-1f2d67f27478" class="">One tip: self-loops are &quot;stay here as long as you like&quot; and in RegEx form, we use the Kleene operator: <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>a</mi><mo>∗</mo></msup></mrow><annotation encoding="application/x-tex">a^*</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.688696em;vertical-align:0em;"></span><span class="mord"><span class="mord mathnormal">a</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.688696em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">∗</span></span></span></span></span></span></span></span></span></span></span></span><span>﻿</span></span></p><p id="092587eb-2793-4ff9-b77a-1becd841903f" class="">A complete example of this theorem: </p><figure id="1d8ed996-8734-4694-a71a-17e233298f79" class="image"><a href="Lecture%2017%20TLDR%20Regular%20Expressions%20cd6e8e2e2b874b0abd54d9170b4d1264/Untitled%2011.png"><img style="width:336px" src="Lecture%2017%20TLDR%20Regular%20Expressions%20cd6e8e2e2b874b0abd54d9170b4d1264/Untitled%2011.png"/></a></figure></div></article></body></html>
