@@ -15,7 +15,7 @@ The files/directories `index.html`, `css`, `images` are for the [website](https:
 The notes are enumerated below. 
 
 <h3>🌲 Stanford Course Notes</h3> 
-- [CS 103: Mathematical Foundations of Computing](link) (Spring 2021) 
+- [CS 103: Mathematical Foundations of Computing](https://rosikand.github.io/notes/courses/cs103) (Spring 2021) 
 
 <h3>🪨 Individual Notes</h3> 
 
