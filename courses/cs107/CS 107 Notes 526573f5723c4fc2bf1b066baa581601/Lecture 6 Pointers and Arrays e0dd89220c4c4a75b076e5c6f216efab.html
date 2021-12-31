@@ -1,0 +1,686 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Lecture 6: Pointers and Arrays</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	text-indent: -1.7em;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+}
+
+.simple-table-header {
+	background: rgb(247, 246, 243);
+	color: black;
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(145, 145, 142, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(187, 132, 108, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(215, 129, 58, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 148, 51, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(108, 155, 125, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(91, 151, 189, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(167, 130, 195, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(205, 116, 159, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(225, 111, 100, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(145, 145, 142, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(187, 132, 108, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(215, 129, 58, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 148, 51, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(108, 155, 125, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(91, 151, 189, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(167, 130, 195, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(205, 116, 159, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(225, 111, 100, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="e0dd8922-0c4c-4a75-b076-e5c6f216efab" class="page sans"><header><h1 class="page-title">Lecture 6: Pointers and Arrays</h1></header><div class="page-body"><p id="e8fc8f96-bac0-4f93-9ad3-aa594ddc98df" class=""><strong>How can we effectively manage </strong><strong><em>all</em></strong><strong> types of memory in our programs?</strong></p><nav id="9754aa8c-4d55-43e1-859d-07e1ef3a46fe" class="block-color-gray table_of_contents"><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#62644a70-faa6-4e3d-a2b4-9b128d8814e0">Pointers</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#b543d616-b23b-492f-9dfd-89974957b0db">Declaring pointers</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#c94e13a3-73fb-4f07-ab27-d834d92ab39b">Motivations for pointers</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#2d8f2e21-07db-4a65-bc97-365752f44261">Operaters </a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#e773121f-5f0d-4cd8-be98-b02f3efb5597">Memory</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#4969204b-d88f-4ceb-941b-ff767f736ebc">Functions with pointers</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#717232cb-0e0d-4cec-b6a1-4f434988f7e6">Double Pointers</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#f989526b-ae00-4f79-82fc-8fc74770250e">Arrays</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#4019b176-8459-4f4c-a8ab-c34409422966">Arrays as parameters</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#e0c0de05-51e8-4e32-bb6a-9cb1fd9fcebd">Arrays of Pointers</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#4f1c166d-c360-42b1-9652-692512be29a0">Pointer Arithmetic</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#1db19b52-4610-4262-800f-bf7095292e92">Const, struct, and ternary</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#66ee1d43-4ca4-4287-bb63-8f01eb99cf81">Const</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#609a7b73-a91a-4233-a246-8561603fd093">Structs </a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#7daf5663-35af-4eed-889b-fc7aec228022">Ternary operator</a></div></nav><hr id="110eed1d-b69c-4244-a4f8-55335e510415"/><h2 id="62644a70-faa6-4e3d-a2b4-9b128d8814e0" class="">Pointers</h2><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="54a904ff-f7d6-48ac-88ca-4da6bb2383ec"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%"><strong>Pointers</strong>: a variable that stores a memory address of another variable. </div></figure><p id="9942f378-2869-4575-8f55-e0cd82dcaaaa" class="">Pointers are variables (like any other variable) that are 8-bytes (8 chars) long. Within these 8-bytes include an address to another variable/unit of memory. Since pointers are variables themselves, they actually have a memory address as well. But that isn&#x27;t the main point here. Really, the address points to another unit of memory. This is useful because we can manipulate larger chunks of memory (such as strings) via pointers. To motivate pointers in one sentence: in C, there is only pass by value meaning that a copy of the value is made when sending in a variable as an argument. What happens if this value is massive in size? Copying it would be expensive. Instead, we can pass the <strong>location</strong> of the variable. This is done through pointers which, in this case, would be a (potentially) smaller sized variable containing the hexidecimal address for the actual variable we are working with. Indeed, pointers are useful in general for memory allocation (heap memory allocation) and manipulation which is what we will get into later in the course. </p><h3 id="b543d616-b23b-492f-9dfd-89974957b0db" class="">Declaring pointers</h3><p id="e6bd9fea-d9d2-4bf4-a044-fa5e84de4bc0" class="">We declare pointers using the following template: </p><pre id="8abb7b94-69c6-4503-91ed-016722e92c80" class="code code-wrap"><code>[type of value being pointed to] *[pointer variable name] = address; </code></pre><p id="943fc9e3-738f-4d30-a4e1-ffa668fd89ec" class="">As an example: </p><pre id="a3d583b2-7cf3-439b-aa68-be22c1b93791" class="code code-wrap"><code>int *xPtr = &amp;x; </code></pre><h3 id="c94e13a3-73fb-4f07-ab27-d834d92ab39b" class="">Motivations for pointers</h3><ul id="6c413f6c-426f-4e44-9ef7-c9f0713af9f6" class="bulleted-list"><li style="list-style-type:disc">Allows us to manipulate memory and allocate memory at a lower level (i.e. heap allocation). </li></ul><ul id="481096ff-3897-4ef7-9953-c452d1f680c6" class="bulleted-list"><li style="list-style-type:disc">Pass around large variables by reference to avoid expensively making a copy. </li></ul><ul id="8133818b-7012-4c1c-8ad3-fe422bee1c33" class="bulleted-list"><li style="list-style-type:disc">Refer to memory generically (type-agnostic).  </li></ul><h3 id="2d8f2e21-07db-4a65-bc97-365752f44261" class="">Operaters </h3><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="331129f0-2ad1-481d-bec5-aa48527e983e"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%"><strong>Address of</strong> (<code>&amp;</code>): The <code>&amp;</code> operator gets the address of the operand variable. </div></figure><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="c76d0a2a-a010-42e5-9d39-22c690978d36"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%"><strong>Deference</strong> (<code>*</code>): The <code>*</code> operator gets the value of the address the pointer is pointing to. </div></figure><p id="44eaf362-180a-42bd-9562-7f813e1a928a" class="">Note: you may notice that we use <code>*</code> when declaring pointers. There is actually a double use case. We use <code>*</code> to deference other variables on the fly, but when declaring pointers, we also use <code>*</code>. The <code>*</code> denotes that the variable is an address (pointer). To bring light to this, we understand that we need to type our variables with type (i.e. <code>int x = 7</code>). In this sense, we can kind of say that pointers also require its own &quot;type&quot; which is denoted by <code>*</code> (i.e. <code>char *hello = &quot;hello&quot;</code>). See Nick&#x27;s answer <a href="https://edstem.org/us/courses/14319/discussion/742284?answer=1718292">here</a>.  </p><h3 id="e773121f-5f0d-4cd8-be98-b02f3efb5597" class="">Memory</h3><blockquote id="c836e7b0-de96-4d84-9c8b-25e6087d4edd" class="">You should think of memory as one big array of bytes. Each &quot;cell&quot; has an address associated with it and (possibly) a value. <figure id="23bc1beb-6bdd-41a7-8a9c-5069d86e2333" class="image"><a href="Lecture%206%20Pointers%20and%20Arrays%20e0dd89220c4c4a75b076e5c6f216efab/Untitled.png"><img style="width:144px" src="Lecture%206%20Pointers%20and%20Arrays%20e0dd89220c4c4a75b076e5c6f216efab/Untitled.png"/></a></figure></blockquote><ul id="7329071c-bbef-44a2-a116-72a32c979c8a" class="bulleted-list"><li style="list-style-type:disc">A pointer takes up 8 of these slots and is used to store the hex address of another item. </li></ul><h3 id="4969204b-d88f-4ceb-941b-ff767f736ebc" class="">Functions with pointers</h3><p id="6edf6324-e46b-45db-b8e4-0c6fda73d647" class="">When passing around pointers, we utilize several of the<strong> </strong>operators.</p><ul id="54bc9994-51d1-40e0-8ab2-8498a58022e2" class="bulleted-list"><li style="list-style-type:disc">Everything in C is automatically <strong>passed by value</strong> which means a copy is made of the argument. Thus, any changes do not persist.  </li></ul><ul id="92e3fb02-63c7-4636-9b36-826ddbe8f115" class="bulleted-list"><li style="list-style-type:disc">To have changes persist, you must pass in a pointer (address of, <code>&amp;</code>) of the argument variable. That is, an address of the location of the variable&#x27;s value is sent in to the function. As a result, to <em>essentially</em> pass-in-reference, you can use the <code>&amp;</code> operator (i.e. <code>myfunc(&amp;myvar)</code>). A copy of the address is sent in. </li></ul><ul id="500f96f9-186f-4dcc-8f4d-f38ce89f30c4" class="bulleted-list"><li style="list-style-type:disc">Because of this, in the formal parameter of the actual function, you need to use the pointer type (i.e. <code>myfunc(char *ch)</code>). Furthermore, you must remember that once inside the function, this argument is actually an address. Thus, to change/get the value, you must deference using <code>*</code>). </li></ul><hr id="e0a92574-c00f-46d3-b245-282067912506"/><h2 id="717232cb-0e0d-4cec-b6a1-4f434988f7e6" class="">Double Pointers</h2><p id="66d93fdb-1a25-4a92-bee6-a27e51504fae" class="">Now we introduce double pointers which are, well, <strong>pointers to pointers</strong>. </p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="adebf76c-92e3-4041-93c7-406c035d57ba"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%"><strong>Double pointers</strong>: a variable that stores a memory address of another pointer.  </div></figure><p id="deec6563-30f3-450e-adde-b8e5901408f8" class="">The motivation for this is that we might want to modify the address of a pointer itself (i.e. modify where a pointer points to). This actually makes a lot of intuitive sense when you think of it. </p><p id="f959ef49-c1e3-4fc9-bd51-6029bf1596d6" class="">I think a good mental model to have for double pointers is to think of pointers themselves as just an ordinary variable (which is actually what they are) and think of how we can use pointers to point to these variables themselves. </p><p id="b2b8a479-b925-48be-bcde-a59e1bd97c96" class="">See the skipSpaces example from lecture to get a better understanding of double pointers. You really just need to follow the memory diagram here. </p><figure id="1c6286a7-8fbc-40ba-bf9b-6035451ec2cf" class="image"><a href="Lecture%206%20Pointers%20and%20Arrays%20e0dd89220c4c4a75b076e5c6f216efab/Untitled%201.png"><img style="width:384px" src="Lecture%206%20Pointers%20and%20Arrays%20e0dd89220c4c4a75b076e5c6f216efab/Untitled%201.png"/></a></figure><p id="29d71cee-0baa-45e1-9ef2-c4d634ebbb79" class="">
+</p><hr id="fc8fd8ff-474f-4c39-9ee6-a0569ea385cb"/><h2 id="f989526b-ae00-4f79-82fc-8fc74770250e" class="">Arrays</h2><p id="632df29a-ea01-4d4d-9397-42b5bfeaac6a" class="">We will talk about arrays and how they are represented in memory. Before we jump into arrays, it is helpful to understand how variables are stored in memory. See this memory diagram: </p><figure id="3662b5b7-752a-4c98-9434-91da74f5a2a7" class="image"><a href="Lecture%206%20Pointers%20and%20Arrays%20e0dd89220c4c4a75b076e5c6f216efab/Untitled%202.png"><img style="width:144px" src="Lecture%206%20Pointers%20and%20Arrays%20e0dd89220c4c4a75b076e5c6f216efab/Untitled%202.png"/></a></figure><p id="b1bce4ab-88bd-4712-ab88-0219699ca7ee" class="">Here <code>x</code> is stored at location <code>0x1f0</code> in memory and <code>x</code> contains the value <code>2</code>. So when we refer to <code>x</code>, we refer to 2.</p><p id="bc303b4e-75b9-4a27-bcd3-cd27fb79fbbe" class="">Arrays are stored in memory in the same way <strong>except</strong> that the variable name refers to a contiguous block of memory (multiple cells possibly) rather than just one cell. </p><figure id="e3c50415-f54c-4a20-bbce-7d9a40ea3831" class="image"><a href="Lecture%206%20Pointers%20and%20Arrays%20e0dd89220c4c4a75b076e5c6f216efab/Untitled%203.png"><img style="width:144px" src="Lecture%206%20Pointers%20and%20Arrays%20e0dd89220c4c4a75b076e5c6f216efab/Untitled%203.png"/></a></figure><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="8ec9d626-bf66-4998-b182-df72161fc12e"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%"><strong>Arrays</strong>: a variable that refers to an entire, contiguous block of memory. </div></figure><ul id="40e0d138-376b-4f43-8b4a-9908b65706d9" class="bulleted-list"><li style="list-style-type:disc">Size of a declared array cannot be changed. </li></ul><ul id="a052905a-18c9-4043-87c1-e2a59bfc1ede" class="bulleted-list"><li style="list-style-type:disc">Cannot reassign arrays (unlike pointers). </li></ul><h3 id="4019b176-8459-4f4c-a8ab-c34409422966" class="">Arrays as parameters</h3><p id="80de2944-e4ea-43ff-a171-3bda6c71dd5e" class="">When passing in an array as an argument into a function, C makes a copy of the address of the first array element and sends that in instead of the whole array. </p><ul id="b7334022-3fd4-4156-af87-007ae5c77a83" class="bulleted-list"><li style="list-style-type:disc">Note: this might be a problem with <code>sizeof()</code> because if you call <code>sizeof()</code> on an array in a function and it is passed in via argument, you must remember that it itself is actually a pointer now so <code>sizeof()</code> would just return 8. Thus, you should throw the size in of an array as an extra argument if needed. <ul id="6a58f7b4-8be6-40a9-a276-143bf2365f5b" class="bulleted-list"><li style="list-style-type:circle">You might ask why we can&#x27;t just deference an array pointer and get size vai that way. You must recall that the pointer points to the <em>first </em>element of the array so that will just get the size of that element rather than the entire array. </li></ul></li></ul><ul id="4e1f6079-bb64-4b24-bb3a-68ee2c53bbc2" class="bulleted-list"><li style="list-style-type:disc">Another note is that these are the same:  </li></ul><pre id="b1798ef4-1ecf-4a49-b4dd-18652a70d7e3" class="code code-wrap"><code>// the following are equivalent
+
+char *ptr = &amp;str[0];
+char *ptr = &amp;str; // should avoid this though </code></pre><p id="d0f332fc-2ca3-46cc-a235-2d2a5b1cb5a6" class="">This is because a pointer to an array points to the address of the first variable of the array (second line). On the first line, we get the address of the first element as well. This makes sense. </p><hr id="f6122b35-ef19-4abf-92be-40e3bbde4eb8"/><h2 id="e0c0de05-51e8-4e32-bb6a-9cb1fd9fcebd" class="">Arrays of Pointers</h2><ul id="f83994f3-e25a-4a6b-8d1a-3ad6f655553f" class="bulleted-list"><li style="list-style-type:disc">Can have an array of pointers (i.e. array of strings). Each element is a pointer pointing to the first element of the string (if it is a string... does not have to be). </li></ul><hr id="51e02b5f-1dbd-4f33-97d3-66ddc20e7d94"/><h2 id="4f1c166d-c360-42b1-9652-692512be29a0" class="">Pointer Arithmetic</h2><ul id="4585581d-8167-445e-865c-2dea72cbeb8a" class="bulleted-list"><li style="list-style-type:disc">We saw this with char * strings already where it updates the memory address whatever arithmetic operation you perform. </li></ul><ul id="29770100-8228-4b1c-a763-1fa6cabe8e1d" class="bulleted-list"><li style="list-style-type:disc">This can be generalized to all types of pointers as well. However, the arithmetic operations work based on the size of the data type. </li></ul><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="042087ed-9369-4a7c-b6f0-dcc70c95a74e"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%">Pointer arithmetic works <strong>place-wise based on size of data type</strong>. Each place is the size of the data type in bytes. </div></figure><p id="5fe28324-f628-41d0-a5eb-8ff38258a7c8" class="">That is, say we have </p><pre id="48bb27ed-c46e-4477-aad3-f6ec406a1275" class="code code-wrap"><code>int *nums = ... // e.g. Oxff0
+int *nums1 = nums + 1; // e.g. Oxff4</code></pre><p id="a9233afe-b897-41f4-a5cb-62671fed0c66" class="">Of course this works nicely for strings since chars are 1 byte. </p><p id="0c6d5e8b-a87c-418b-970f-6f2f46fe5658" class="">Additionally, we can use bracket notation:</p><pre id="80aeec5d-4d87-46a9-b7d1-fe2e3abc757c" class="code code-wrap"><code>char someLetter = str[2]; </code></pre><p id="32e7ae2e-ca60-4e9b-a09d-7855492547bf" class="">This means that we should update the pointer + 2 bytes (since chars are one byte long), deference, and get value. </p><p id="887867e0-8e1d-4917-819a-10e0d9d6ee04" class="">This can be kind of tricky so make sure to re-watch the video. </p><pre id="175d102c-5ce9-4f91-b998-5bb50f9f921a" class="code code-wrap"><code>int *nums = ... // e.g. Oxffo
+int *nums3 = nums + 3; // e.g. Oxffc
+int diff = nums3 - nums; // 3</code></pre><p id="f7f7ecbb-9f9e-453a-98c6-db1229e78b10" class="">A formula to get the actual value is: </p><figure id="9d154aa3-8d72-4da7-9ea0-41df18d3cec1" class="equation"><style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><div class="equation-container"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mrow><mi>b</mi><mi>y</mi><mi>t</mi><mi>e</mi><mi>w</mi><mi>i</mi><mi>s</mi><mi>e</mi><mtext>  </mtext><mi>v</mi><mi>a</mi><mi>l</mi><mi>u</mi><mi>e</mi></mrow><mrow><mi>s</mi><mi>i</mi><mi>z</mi><mi>e</mi><mtext>  </mtext><mi>o</mi><mi>f</mi><mtext>  </mtext><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi><mtext>  </mtext><mi>t</mi><mi>y</mi><mi>p</mi><mi>e</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">\frac{bytewise \; value}{size \; of \; data \; type}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:2.25188em;vertical-align:-0.8804400000000001em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3714399999999998em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">s</span><span class="mord mathnormal">i</span><span class="mord mathnormal">ze</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord mathnormal">d</span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord mathnormal">t</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mord mathnormal">p</span><span class="mord mathnormal">e</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">b</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mord mathnormal">t</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="mord mathnormal">i</span><span class="mord mathnormal">se</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mord mathnormal">a</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">u</span><span class="mord mathnormal">e</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.8804400000000001em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></div></figure><p id="1a1bf1fe-373e-4194-99e7-4695461f156b" class="">Thus, above, we have <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>12</mn><mi mathvariant="normal">/</mi><mn>4</mn><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">12/4=3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">12/4</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">3</span></span></span></span></span><span>﻿</span></span>. </p><hr id="b29de993-1233-49f4-8691-464899bb8f09"/><h2 id="1db19b52-4610-4262-800f-bf7095292e92" class="">Const, struct, and ternary</h2><h3 id="66ee1d43-4ca4-4287-bb63-8f01eb99cf81" class="">Const</h3><ul id="25af6a7b-ffec-48a7-96e4-86d8224b7050" class="bulleted-list"><li style="list-style-type:disc">We can use the keyword <code>const</code> to declare global constants in program. <ul id="c2ab6e17-be29-4586-8cf9-50862372509b" class="bulleted-list"><li style="list-style-type:circle">In C, constants cannot be changed after declared. </li></ul></li></ul><p id="d25b4fcb-3bcf-4318-a807-c505d7bf0dce" class="">Syntax: </p><pre id="6334c7c4-8e28-44aa-a0d2-28259785fdce" class="code code-wrap"><code>const int someNum = 5; </code></pre><p id="4b7727eb-58e5-4cb6-bd7d-10a57be69e0f" class="">Can also declare at top of file like so: </p><pre id="606c319e-245b-4761-b23d-8f2ac817de93" class="code code-wrap"><code>#define </code></pre><ul id="dc03e664-b120-49af-b64d-6b3cbba58182" class="bulleted-list"><li style="list-style-type:disc">Useful for making things read-only (un-changeable) <ul id="d657fe89-eb28-4526-90e9-1552ff97a58d" class="bulleted-list"><li style="list-style-type:circle">With pointers, we can modify the pointer but not the values it points to (this applies for double pointers too). </li></ul></li></ul><ul id="6936065d-0202-4dd2-863f-929771359dd2" class="bulleted-list"><li style="list-style-type:disc">Part of the type. </li></ul><h3 id="609a7b73-a91a-4233-a246-8561603fd093" class="">Structs </h3><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="083efc65-d61d-478d-ba05-552d090222e5"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%"><strong>Struct</strong>: A struct is a way to define a new variable type that is a group of other variables.</div></figure><p id="29b08686-1c28-411e-8f82-622e17d8cf4a" class="">Syntax: </p><pre id="b22bc775-1ad1-4965-801e-09909026a4a9" class="code code-wrap"><code>struct date { // declaring a struct type
+	int month;
+	int day; // members of each date structure
+};
+
+struct date today; // construct structure instances
+today.month = 1;
+today.day = 28;
+
+struct date new_years_eve = {12, 31}; // shorter initializer syntax</code></pre><ul id="387547ba-17a8-4a97-8457-7bebc78754db" class="bulleted-list"><li style="list-style-type:disc">Use <code>typedef</code> to define it as a type so you don&#x27;t need to put <code>struct</code> before every declaration. </li></ul><pre id="bab54f9d-deaf-4aa5-9f5f-a863eb4e89b0" class="code code-wrap"><code>typedef struct date {
+	int month;
+	int day;
+} date;
+
+date today;
+today.month = 1;
+today.day = 28;</code></pre><ul id="012f88c0-69f1-48b8-87a0-8d087db982e0" class="bulleted-list"><li style="list-style-type:disc">Can utilize pointers for structs as well (since if you pass a struct into a function, it copies it first). </li></ul><ul id="24eedcd4-86bd-464f-ab1f-50ed96f76b49" class="bulleted-list"><li style="list-style-type:disc"><code>-&gt;</code> operator is syntax shorthand for deferencing struct pointers. Usually, we&#x27;d write something like <code>(*d).day++</code> with paranthesis since order of operations matter here. Shorthand we can just write <code>d→day++</code>. </li></ul><h3 id="7daf5663-35af-4eed-889b-fc7aec228022" class="">Ternary operator</h3><ul id="098f12ab-1b1a-4512-9496-ef0d5d35d568" class="bulleted-list"><li style="list-style-type:disc">Shorthand for using if/else to evaluate to a single value. </li></ul><pre id="00450223-47b3-45fc-9383-dd1065f124dc" class="code code-wrap"><code>condition ? expressionIfTrue : expressionIfFalse</code></pre><pre id="3670590c-509f-49ee-8adb-eed4f956a5df" class="code code-wrap"><code>int x;
+if (argc &gt; 1) {
+	x = 50;
+} else {
+	x = 0;
+}
+// is equivalent to
+int x = argc &gt; 1 ? 50 : 0;</code></pre></div></article></body></html>

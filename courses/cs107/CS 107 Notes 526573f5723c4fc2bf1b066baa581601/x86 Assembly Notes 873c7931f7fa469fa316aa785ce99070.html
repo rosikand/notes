@@ -1,0 +1,720 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>x86 Assembly Notes</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	text-indent: -1.7em;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+}
+
+.simple-table-header {
+	background: rgb(247, 246, 243);
+	color: black;
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(145, 145, 142, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(187, 132, 108, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(215, 129, 58, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 148, 51, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(108, 155, 125, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(91, 151, 189, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(167, 130, 195, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(205, 116, 159, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(225, 111, 100, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(145, 145, 142, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(187, 132, 108, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(215, 129, 58, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 148, 51, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(108, 155, 125, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(91, 151, 189, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(167, 130, 195, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(205, 116, 159, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(225, 111, 100, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="873c7931-f7fa-469f-a316-aa785ce99070" class="page sans"><header><h1 class="page-title">x86 Assembly Notes</h1></header><div class="page-body"><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="f9e5e9af-4c16-4f65-a529-076235e5e44e"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%">These are my notes on the x86 Assembly Language which is covered in lectures 10-13 of CS 107. </div></figure><p id="b2abfed0-9bba-4c41-a87f-2b09001aa0b2" class="">By: Rohan Sikand</p><p id="463ece50-6dc9-40a4-a43d-19c9529d7e9c" class=""><span style="border-bottom:0.05em solid"><strong>Table of contents</strong></span><strong>:</strong> </p><nav id="e8411509-508d-46cb-803d-162ff23339b0" class="block-color-gray table_of_contents"><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#8af865ba-ebc1-4bce-a52b-13fcd9012e04">Introduction to x86 and Moving Data</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#be64e50e-80a8-4cdd-9cc0-1a2826b1c150">Viewing assembly</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#5f3ebdeb-99ae-4420-86bb-51d343a89c52">Instructions</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#6b3fad86-017a-4f25-b1a6-99fab454d183">Registers</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#79b1889a-e858-40c3-9682-4579b13251f6">Operations </a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#849fdea6-d3f5-44a7-abca-09e0a0ee9539"><code>mov</code></a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#cfefee64-be8b-444b-b9a7-57fa2ea991c6">Operand forms </a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#1b2a6f3d-1f84-44ee-9c10-e83c2f8ae658">More forms</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#3c6adf7a-b6c1-4f99-a1c7-2b08c07697c6">Assembly: Arithmetic and Logic</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#b7206904-e457-43ed-b4d7-f1cc01ebfd4a">Data and register sizes</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#346e9bc4-36d7-4157-83f8-cc9153457516">Subsets of registers</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#78d2c21d-ba1a-493e-b669-f266c5768688">Register responsibilities </a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#6428b272-04b4-4495-b802-155aae176d89"><code>mov</code> variants </a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#83edca13-9e9e-444e-8a35-b219654c53fb"><code>lea</code></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#594d7a5d-9197-49f4-8acd-c187dd9bee47">Logical and arithmetic operations</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#00a539d0-3d6d-4ec0-b43e-8404a186efc5">&gt; 64-bit arithmetic </a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#dcc2ab42-b621-4693-9fdd-43276c5e324c">Division </a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#018c62d8-cfa7-42df-8db1-120fb02e39d4">Bit shifting</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#d63182dc-c56c-4416-a283-79a34829fa02">Reverse Engineering</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#056e611d-d825-4a57-8ff6-a25dc90f90fa">Assembly: Control Flow</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#0a9ca949-ecab-44fe-b45e-d9125bdb8409"><code>jmp</code></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#446ec7a8-1d9c-49c6-9279-ae29522c7bfb">Conditional jumps</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#82a183d3-a396-4b29-aece-997a0cd102eb">Condition codes</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#5d976ecf-8fb2-4b19-b16d-c1317c668701">If-statements</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#0fbce710-3b1e-4978-b5b9-618ea21b3cf5">If-else</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#b21914c3-5057-41cf-b8ac-3b871424f0be">Loops</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#50eb0ce9-5a2c-4134-8258-ba2db7f4a9bb">For loops</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#1d2d2788-71bc-445d-9f49-7ed7bded2b9c">Assembly: Function Calls and the Runtime Stack</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#0e79a76d-128d-4f50-872c-1f8fe7fd2292">Revisiting <code>%rip</code></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#850a373b-3878-4a20-8af6-4af93b1a2b52">Calling functions</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#7ca6f57e-8651-4b31-8791-30e567ce7435">Interacting with the stack</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#23523332-885d-452d-a944-8079c228ab93">Passing control </a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#6fabff7d-8763-4b27-a343-fbf71e5f1ac7">Passing data</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#25cac26e-5b19-415d-8ec3-97f8f09f890e">Local storage and memory management</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#4c49e6a4-faf6-4bab-9825-b8b0de6ead8b">Register restrictions</a></div></nav><hr id="4f0b5ced-c602-4b95-8240-2db360967e42"/><p id="f7e6732a-5f60-463d-9b31-cbcc54f0fdb5" class="">We will cover the x86 assembly language over the next four lectures (lectures 10-13). </p><figure id="69ae9569-e845-4c78-9597-1c7ac5a542d5" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled.png"><img style="width:384px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled.png"/></a></figure><hr id="cae9f9a4-bcb2-4a1c-9df2-b6ca44034cc1"/><h1 id="8af865ba-ebc1-4bce-a52b-13fcd9012e04" class="">Introduction to x86 and Moving Data</h1><p id="70a540fb-479d-472d-b72e-53bc7991d733" class="">Lecture 10 notes. </p><p id="3625bcbc-60a7-46e7-8edb-ffa1df852806" class="">So we know that everything is represented in bits. But what about the literal C program source code itself? Yep! That is also converted into bits. </p><ul id="9e902f5c-42dc-43a1-beb0-0f59aeaa10c2" class="bulleted-list"><li style="list-style-type:disc">GCC is a <strong>compiler</strong> that converts human-readable code into machine-level <span style="border-bottom:0.05em solid">instructions</span>. <ul id="8a29ca39-9c29-46c4-b722-6074f7719273" class="bulleted-list"><li style="list-style-type:circle">This machine code is all in 1s and 0s so that the computer can interpret it. </li></ul></li></ul><ul id="0a178ea0-1b80-4c65-810c-57dd32393d94" class="bulleted-list"><li style="list-style-type:disc">However, there is something called <strong>assembly</strong> which represents the machine code in a human-readable fashion. </li></ul><ul id="4118b757-7163-4987-8ca8-37b0c25bc633" class="bulleted-list"><li style="list-style-type:disc">So basically, in C, you first write your program in a <code>.c</code> file. Then, you use the GCC compiler to compile the program. This produces a binary executable which is what you then run to get your output. This binary executable is the C program in machine-level code. <ul id="f164a560-4f20-44dc-be4f-21b673ae47fe" class="bulleted-list"><li style="list-style-type:circle">Now, there is an intermediary called assembly which basically translates these instructions into a human read-able format. We will learn this language. </li></ul></li></ul><h2 id="be64e50e-80a8-4cdd-9cc0-1a2826b1c150" class="">Viewing assembly</h2><p id="32d2d66b-5f38-4c6b-b440-b92ae1fdf167" class="">In your terminal window, compile your C program using <code>make</code> which should produce the executable which is binary machine code. Now to view this executable in assembly, type: </p><pre id="a9db2df0-7def-429c-b74a-bf72921094a7" class="code code-wrap"><code>objdump -d &lt;executable_name&gt;</code></pre><p id="89e63d8a-12f3-4e9a-981f-7c1d8cd732d5" class="">Let us now learn how to interpret the assembly representation. We will break down what is outputted by <code>objdump</code>. First, here is the C source of the program we are looking at. </p><pre id="01adbfc1-4c8a-465e-b520-0ffe3437c91c" class="code code-wrap"><code>// c code of assembly below 
+int sum_array(int arr[], int nelems) {
+	int sum = 0;
+	for (int i = 0; i &lt; nelems; i++) {
+		sum += arr[i];
+	}
+	return sum;
+}</code></pre><p id="86e37f09-7d2d-4037-9eb2-9fdaa28967af" class="">Here is an example of assembly for the above code: </p><figure id="d51d8cf7-85fe-4a74-8196-31e4c5372d75" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%201.png"><img style="width:432px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%201.png"/></a></figure><p id="28433dd9-e447-455b-990d-e3dc34772ad6" class="">Each line represents an <strong>instruction</strong>. </p><p id="14ea90f8-6bc8-4d10-9eea-8ec10474dd25" class="">Dissecting this down, we have the <strong>function</strong> name (instructions are divided into sub-blocks based on function calls): </p><figure id="c63202de-8bb2-4b24-bc35-0b984003891c" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%202.png"><img style="width:432px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%202.png"/></a></figure><p id="4c87a99e-a6d4-45e7-a5c2-6efc752dfe1c" class="">we also have the <strong>memory addresses of each instruction</strong>: </p><figure id="0cbe2d89-b7bc-4b2e-bae2-1f2ec2cf91b5" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%203.png"><img style="width:432px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%203.png"/></a><figcaption>As expected, we must store the instructions somewhere in memory. Thus, these are the addresses of each instruction. </figcaption></figure><p id="1812cedc-5eed-472f-ab53-7451c2395b89" class="">and the <strong>machine code</strong> for each instruction: </p><figure id="ab7b0e60-e847-4de5-87ff-0d5cae58ccf9" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%204.png"><img style="width:432px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%204.png"/></a></figure><p id="36e83573-c3e3-4b9a-b97a-231f9e5c42f1" class="">then finally we have the <strong>human-readable version of the machine code</strong> for each instruction (i.e. the actual <strong>assembly</strong>) </p><figure id="f2a54c75-6c21-4fd1-ba65-a5b29dca699b" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%205.png"><img style="width:432px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%205.png"/></a></figure><hr id="52a143a1-fe15-4827-a24a-515db943032d"/><h2 id="5f3ebdeb-99ae-4420-86bb-51d343a89c52" class="">Instructions</h2><p id="e0ccfbb6-c524-49d9-8f81-4d5f09abf09c" class="">The fundamental unit of assembly is an instruction which is represented on the right hand side of each line in the breakdown above. Let us interpret the structure of each assembly instruction. </p><p id="ac961124-6cff-4da6-894a-9b9479c39196" class="">We have the <strong>opcode </strong>which is the name of the operation (there are different types of operations which we will explore):  </p><figure id="8898412b-e9b2-4037-b6b4-91558a8c16da" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%206.png"><img style="width:336px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%206.png"/></a></figure><p id="3f5cd2eb-c2b6-4355-a77e-6bbf3efcc4c7" class="">We can also have <strong>arguments</strong>: </p><figure id="a9897dd3-5190-49e6-8228-5a5c59b40723" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%207.png"><img style="width:288px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%207.png"/></a></figure><p id="a29c9d47-d04e-4fc9-90dc-556d0aefac27" class="">We can break down each argument here. Anything prefixed with a <strong><code>$</code></strong> is a <strong>constant numerical value </strong>(also called an <strong>immediate</strong> value):  </p><figure id="7341f6a2-316c-47d2-9fb0-be4c7ed6c30f" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%208.png"><img style="width:288px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%208.png"/></a></figure><p id="5ab532cc-b4fb-4660-9713-8625f2cb6c38" class="">and anything prefixed with a <strong><code>%</code></strong> is something called a <strong>register</strong> which is something we will introduce next. </p><figure id="1f80225d-faf2-4711-8084-ba7e21845cea" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%209.png"><img style="width:288px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%209.png"/></a></figure><hr id="850725da-ce41-491a-a2fb-54fbf307ad51"/><h2 id="6b3fad86-017a-4f25-b1a6-99fab454d183" class="">Registers</h2><ul id="1d691b4c-023c-4182-ba4e-3972bd61dce4" class="bulleted-list"><li style="list-style-type:disc">Machine code representations are dependent on the processor they are running on. That is, assembly is different for each processor which is why you cannot run some Intel x86 apps on the new M1 macs since it uses a different assembly instruction set. In this class, we will use the x86 instruction set. The reason why assembly is dependent on the processor is because of registers. </li></ul><ul id="52895abc-767e-4a6f-904c-49d917ba2ff6" class="bulleted-list"><li style="list-style-type:disc">We now introduce <strong>registers</strong> which are a fundamental concept in assembly. </li></ul><ul id="c97cb319-851d-4142-9eb6-fd55472882aa" class="bulleted-list"><li style="list-style-type:disc">In the processor, there are 16 different registers: </li></ul><figure id="971debd4-de5d-4cfd-8d31-a2d3080e5ec8" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2010.png"><img style="width:432px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2010.png"/></a></figure><ul id="9a57082e-a348-4daa-9aa7-95bccf39aabc" class="bulleted-list"><li style="list-style-type:disc">But what exactly is a register? </li></ul><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="d082dcd4-952a-4231-8aac-f96408724028"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%"><mark class="highlight-yellow_background"><strong>Register</strong></mark>: A fast read/write <strong>memory slot</strong> (small storage area) on the CPU (processor) that can hold variable values. <ul id="01cd9a8c-5565-4c91-8555-c1cf865b477d" class="bulleted-list"><li style="list-style-type:disc">Like a scratch pad for the processor. That is, it loads data into and out of these registers when it needs to perform some sort of operation on such data.  </li></ul></div></figure><ul id="7f24fc9b-3736-4e4f-aa67-bbba308f5384" class="bulleted-list"><li style="list-style-type:disc">Note that registers are <strong>not</strong> located in memory and are 64 bits big inside the processor itself. <ul id="28a1284f-21b1-4b37-8d2e-5b11711fd934" class="bulleted-list"><li style="list-style-type:circle">Side note: remember how some computers used to be 32 or 64 bit? This is where this originated from! <ul id="b2a930f6-a88c-45ef-a0c1-cb6ce70a0550" class="bulleted-list"><li style="list-style-type:square">Important note: some computers have 32-bit registers and thus their registers are prefixed with <code>e</code> instead of <code>r</code> (<code>%eip</code> instead of <code>%rip</code>). <ul id="6519bef1-b1dd-4a00-919b-ccc9947fdd4b" class="bulleted-list"><li style="list-style-type:disc">That is, if a register is prefixed with an <code>r</code>, you are referring to the 64-bit version of the register whereas if you the register is prefixed with an <code>e</code>, you are referring to the 32-bit version of the register. So <code>%eip</code> and <code>%rip</code> refer to the same register but just different amounts of that register. <ul id="32c37a0a-c4bf-4ccb-8e89-5a3d8988f0bc" class="bulleted-list"><li style="list-style-type:circle">When you disassemble C source, you&#x27;ll see both of these show up from time to time. When C operates with a data type such as <code>long</code>, it takes up 64 bits in the register and if it is just a regular <code>int</code> and the register name is prefixed with an <code>r</code>, then the register is 32 bits and prefixed with an <code>e</code>. </li></ul></li></ul></li></ul><ul id="43f6ca28-adfe-4efc-a0dd-edb8c94c9021" class="bulleted-list"><li style="list-style-type:square">To make this more concrete: look at the following picture: <figure id="0fd06460-cb0e-43c4-bc31-a2e39c263ea9" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2011.png"><img style="width:240px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2011.png"/></a></figure><ul id="fef6e7b3-bc2a-448e-abe6-965850aab220" class="bulleted-list"><li style="list-style-type:disc"><strong>The entire register is 64-bits but sometimes you don&#x27;t need the higher order bits. Thus, you can access the lower order bits using the </strong><strong><code>e</code></strong><strong> prefix</strong>. Funnily enough, you can even access just the lower <code>16</code> and <code>8</code> bits as well but we don&#x27;t need to get into those for our purposes. </li></ul></li></ul></li></ul></li></ul><ul id="0d0ee9c9-2188-4e99-b578-b37858dc6405" class="bulleted-list"><li style="list-style-type:disc">In addition to local variable values, registers can also hold function return values and parameters among other things. </li></ul><ul id="126d2563-5151-4122-9896-f31c07caa507" class="bulleted-list"><li style="list-style-type:disc">Registers are important since they are extremely fast memory and also because most of the assembly instructions deal with moving data in and out of registers.<ul id="f89303f0-c20d-4131-b32f-48ef3771d64a" class="bulleted-list"><li style="list-style-type:circle">Examples include operations such as adding two numbers in a register, move to memory and move from memory. </li></ul><ul id="2b9396b6-c8ec-4aa1-b199-e8b45255b942" class="bulleted-list"><li style="list-style-type:circle">Specifically, this is the level of abstraction we will deal with. Common assembly code includes things like moving data into one register than copying the data at that register to another memory location. Things like that. Thus, it is vital to understand registers and what they do.<ul id="385b8409-a1f0-4547-a66b-b304dc931993" class="bulleted-list"><li style="list-style-type:square">In furthering our understanding of the level of abstraction of assembly, take the following one line of C code: </li></ul><pre id="18f4a9f8-cee3-42aa-b7c4-6e44d2217fa4" class="code code-wrap"><code>int sum = x + y; </code></pre><ul id="f06035ed-68cc-4189-8277-bb71239ff0f6" class="bulleted-list"><li style="list-style-type:square">In assembly, instead of it being just one line, it is actually 4. First, we copy x into register 1. Then, we copy y into register 2. Then, add the two registers. Finally, we write register 1 to memory. <ul id="7ff7873e-172a-4992-a5f4-7c5ee592751a" class="bulleted-list"><li style="list-style-type:disc">You see how we use registers for everything? This reduces the layers of abstraction but adds more complexity. </li></ul></li></ul></li></ul></li></ul><ul id="f7e398f5-7924-4575-8e53-9cc01309ca09" class="bulleted-list"><li style="list-style-type:disc">There are certain registers which have <strong>special meanings</strong> (i.e. the program counter). <ul id="262a905c-8efc-480a-8da6-cede86cf1eaf" class="bulleted-list"><li style="list-style-type:circle">This is important in understanding the motivation for why we need registers in the first place. As a brief example (which we will learn about more in the future), is the program counter register. This memory slot stores the address of the next instruction to execute. So you can think of some registers in the <strong>meta</strong> sense in that they hold things about the instructions themselves which is needed to execute the flow correctly. </li></ul><ul id="62f0a006-8209-419f-a473-84961ed53164" class="bulleted-list"><li style="list-style-type:circle"><del>A register that is alphabetic is a special register whereas numeric named ones are just regular registers. </del></li></ul></li></ul><figure id="b9d9cb28-e73e-4b8e-a996-1cc389271b98" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2012.png"><img style="width:192px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2012.png"/></a><figcaption>x86 registers</figcaption></figure><ul id="59fcdbc7-88f6-4299-b8cc-bbf09804df04" class="bulleted-list"><li style="list-style-type:disc">Some registers are named numerically while others are named alphabetically. This is simply a consequence of legacy as in the early days there were only 8 registers instead of 16. So to differentiate it, the newer ones were named numerically since the older 8 were named alphabetically. </li></ul><ul id="e37b76a7-43fe-4149-9fd0-54a65cbc4543" class="bulleted-list"><li style="list-style-type:disc">The x86 architecture set was designed by Intel back in 1978. It was originally designed with 16-bit registers but soon it extended to 32 and now 64-bit registers. Because of this, Intel made unique design decisions to ensure backwards compatibility. As a consequence of this however, this backwards compatibility is evident in register names and things like that. </li></ul><blockquote id="c5fca1c2-90e7-4182-9371-39da3954d15f" class=""><strong>The register layer of abstraction</strong> - if you think about it, in order to convert a high-level program such as a C source into 0s and 1s, all of the functionalities must be converted into a linear and atomic sequence. Atomic meaning each piece of functionality in the program itself must be broken down into the lowest possible level—the fundamental unit, which is a simple operation (such as &quot;add two numbers&quot;). To accomplish this, we need some form of scratch space to store things like the result of an operation for use later (i.e. scratch paper). That is exactly what registers provide for us. This is the register layer of abstraction. </blockquote><h2 id="79b1889a-e858-40c3-9682-4579b13251f6" class="">Operations </h2><p id="5bf2b730-a33b-4e1f-9488-50de8274cd01" class="">Now that we have a fundamental understanding of instructions and registers, let us put them to use. We introduce some fundamental operations here. First up is <code>mov</code>. We then generalize the form of each operand in each instruction. </p><h3 id="849fdea6-d3f5-44a7-abca-09e0a0ee9539" class=""><code>mov</code></h3><p id="2a51074b-e345-4629-be97-3cfcf94c8911" class="">Let us now introduce our first operation. </p><ul id="58786a29-da06-4d4c-9b0e-7f639495cf9a" class="bulleted-list"><li style="list-style-type:disc">We can think of assembly as the programming language of the machine itself. In that sense, an operation/instruction is like a function in assembly. </li></ul><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="34b3feb5-5e5e-47c0-b71e-4396d6756591"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%"><mark class="highlight-yellow_background"><code><strong>mov</strong></code></mark>: assembly instruction that copies bytes from one place to another. </div></figure><ul id="cc41ea53-92c0-4b5d-9f1e-bc95321a1fe4" class="bulleted-list"><li style="list-style-type:disc">You can draw a parallel to the assignment operator (<code>=</code>) that we have in C. </li></ul><ul id="1263f9b3-a374-4d29-b342-41c65dcde3cd" class="bulleted-list"><li style="list-style-type:disc">Note: the order is <code>src, dest</code> (opposite of <code>=</code>). </li></ul><p id="3a421353-c078-449d-941b-991131c950da" class="">The <code>src</code> and <code>dest</code> can be one of: </p><ul id="35f5fa5b-a2fb-4897-9aa0-50e7df54bfb5" class="bulleted-list"><li style="list-style-type:disc">Immediate constant (only <code>src</code> can be this obviously). </li></ul><ul id="5840de4e-0f9b-4b8d-a99e-6b579cfc0481" class="bulleted-list"><li style="list-style-type:disc">Register</li></ul><ul id="4a66c609-21f3-4bce-ae2a-9862ce450f21" class="bulleted-list"><li style="list-style-type:disc">RAM memory location (can&#x27;t both be this in one operation though). <ul id="f31120ed-5bf9-4a5e-bf21-d4ba9258ef0d" class="bulleted-list"><li style="list-style-type:circle">That is, you cannot do memory-to-memory transfer with a single instruction (like <code>memcpy</code>). </li></ul></li></ul><p id="3cfc82d9-cadb-4093-9a9e-07a082c09630" class="">So in other words, you have five possible combinations: </p><figure id="abc317c2-6b91-4ea5-ac4c-fb1c76542e73" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2013.png"><img style="width:288px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2013.png"/></a></figure><p id="2f7f449a-c8b7-4c9d-8b62-fa70f4dc3995" class="">Example: </p><pre id="5a6e5a99-23e5-4c9d-9d33-27d24463997c" class="code code-wrap"><code>mov %rbx,_____</code></pre><h3 id="cfefee64-be8b-444b-b9a7-57fa2ea991c6" class="">Operand forms </h3><p id="03718107-d31f-4385-88b3-b0b7faf53bc4" class="">We now introduce some neat tricks we can use to do things like pointer dereferencing and arithmetic at the assembly level. </p><p id="96aa5037-2388-4b00-926b-5265f896dea2" class="">We will see a lot of common patterns in assembly instructions that represent certain forms. Here, we introduce some useful <strong>forms</strong> we will work with (and we use <code>mov</code> to illustrate such forms):  </p><ul id="64e1720d-7ef5-45a2-93d0-5d0322982629" class="bulleted-list"><li style="list-style-type:disc"><strong>Indirect</strong>: If we wrap the instruction in parentheses, we are in some ways &quot;deferencing&quot; it: </li></ul><pre id="e879d38e-a67c-422d-a020-8c782887f795" class="code code-wrap"><code>mov (%rbx),_____ </code></pre><ul id="2e6a7d82-a846-4972-8485-a7f4ac086091" class="toggle"><li><details open=""><summary>Example</summary><p id="3fe1324f-c58f-41fb-8cdc-2f572d3a9ebf" class="">Here is a small little example of C to assembly that uses pointer dereferencing. </p><figure id="bae74c95-76c2-4ac8-b529-46918416ff88" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2014.png"><img style="width:288px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2014.png"/></a></figure></details></li></ul><ul id="e64c5f66-b714-4914-9da6-529baf947c75" class="bulleted-list"><li style="list-style-type:disc"><strong>Base + displacement</strong>: Usefully, we can harness some syntax to mirror arithmetic. Here we add ten to the address: <ul id="545c2c1c-6de3-4508-99c7-f76f6f168bec" class="bulleted-list"><li style="list-style-type:circle">As per precedence, the <strong>calculation happens </strong><strong><em>first</em></strong> and then the dereferencing. </li></ul></li></ul><pre id="cea3668c-607c-4434-ae98-011f61a8de2b" class="code code-wrap"><code>mov 0x10(%rax),_________</code></pre><ul id="35734e31-3ec6-4920-b3cf-afbc2af97280" class="bulleted-list"><li style="list-style-type:disc"><strong>Indexed</strong>: sums up the values in the parentheses: </li></ul><pre id="e9a928c9-8e4d-4504-853d-2e5cb4b3d80c" class="code code-wrap"><code>mov (%rax,%rdx),__________</code></pre><p id="a4bdcbe5-8094-4fd4-8e19-e6ce53ce274f" class="">We can even combine them. In <strong>general</strong>, we have the following form: </p><pre id="e2784db8-1b98-4723-b6fd-da5aed6dd17b" class="code code-wrap"><code>Imm(rb, ri) is equivalent to address Imm + R[rb] + R[ri]</code></pre><figure id="e7072193-c3d2-4941-a722-7441e4a7d2ce" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2015.png"><img style="width:2444px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2015.png"/></a></figure><p id="3bf818c4-d70d-42d2-9483-b83c0f4e73af" class="">As a principle, if you think about it, everything above is modeled by the above form. For example, if you have no immediate before (i.e. no displacement), then the displacement is really just 0 in the above form. In other words, you should dissect and construct forms based on the above form and not really based on the operational principles themselves. </p><ul id="38c8ea35-60fb-42e6-ad7e-153f58b0cb8b" class="bulleted-list"><li style="list-style-type:disc"><strong>Note that everything is in base 16.  </strong><ul id="9567286a-6c8a-469b-95e2-0f8e891421a3" class="bulleted-list"><li style="list-style-type:circle">This is very important to note. </li></ul></li></ul><p id="b748a59b-099e-4203-8511-4d35731f4c84" class="">Another way of thinking about the above form is that it is kind of like array indexing. You have your displacement to get to the certain address of the array. Then, you have your start index (which is the bit width of an element) and go up until you have the element that you want. </p><h3 id="1b2a6f3d-1f84-44ee-9c10-e83c2f8ae658" class="">More forms</h3><p id="9ff1cd35-d332-4262-a81c-c89d6d581282" class="">We now introduce another form: </p><ul id="73031da6-d34f-456d-aaa8-c88e4beed040" class="bulleted-list"><li style="list-style-type:disc"><strong>Scaled Indexed</strong>: multiplication </li></ul><pre id="c5dc63ee-ebef-4729-8816-447a995e3f5b" class="code code-wrap"><code>mov (,%rdx,4),______</code></pre><ul id="c38e3346-dc57-404a-94ba-8c6c010edf4e" class="bulleted-list"><li style="list-style-type:disc">You might be thinking this looks similar to the summation form above. And it does, but the difference is that the scaling factor is hardcoded and is inside the parentheses. </li></ul><p id="3dd323bf-4522-42ab-801f-d97c19c1ddfe" class="">We have introduced a lot of forms, but the general form is indeed: </p><pre id="7976a463-528a-4dd3-981d-e86314516ae4" class="code code-wrap"><code>Imm(rb,ri,s) = Imm + R[rb] + R[ri]*s</code></pre><figure id="50fd2913-cadd-44da-8af2-d9781a2d8671" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2016.png"><img style="width:384px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2016.png"/></a></figure><ul id="96d62da7-3bec-4a62-a23f-8bf6ab8eec2f" class="bulleted-list"><li style="list-style-type:disc">Another interesting point to note is that these forms mirror a lot of C operations (such as array indexing). So to improve your translation skills, it is good to understand these forms. </li></ul><p id="4c775592-e969-4b7a-b7f7-7eea592bf77c" class="">Here is a nice chart: </p><figure id="900aa1eb-d689-4d62-84f8-42b3f3bd6937" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2017.png"><img style="width:528px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2017.png"/></a></figure><hr id="49e3b0aa-d2eb-4e87-a225-546cc26fd17a"/><h1 id="3c6adf7a-b6c1-4f99-a1c7-2b08c07697c6" class="">Assembly: Arithmetic and Logic</h1><p id="a0d1d90e-76e8-4c0a-81b9-504d433dfb1e" class="">Lecture 11 notes. </p><p id="867eb9f3-d691-4808-97af-6fa029c2b1cc" class="">We will now dive deeper into our study of assembly and learn about how how to perform arithmetic and logical operations in assembly. </p><p id="78266596-4873-42b3-a319-3500e96c9007" class="">Note that in our study of assembly, our general perspective is to learn how to read assembly and understand the C code that generated it rather than write assembly from scratch. </p><h2 id="b7206904-e457-43ed-b4d7-f1cc01ebfd4a" class="">Data and register sizes</h2><p id="24da6459-27f5-4b06-bd47-6e3068b1e519" class="">We will introduce new terminology in terms of bytes that we will work with in assembly. We have: </p><ul id="bb72408c-7b47-4a59-9a8d-c431bb701bf0" class="bulleted-list"><li style="list-style-type:disc">A <strong>byte</strong> is 1 byte.</li></ul><ul id="d559078d-5a9c-4ce5-8a47-c02235113b85" class="bulleted-list"><li style="list-style-type:disc">A <strong>word</strong> is 2 bytes.</li></ul><ul id="ce63cfb2-9ab5-4434-9d4f-fa023bc5ccbc" class="bulleted-list"><li style="list-style-type:disc">A <strong>double word</strong> is 4 bytes.</li></ul><ul id="b9a558bb-f063-4377-97f3-87a82ad8f162" class="bulleted-list"><li style="list-style-type:disc">A <strong>quad word</strong> is 8 bytes. </li></ul><p id="a4b8e7a3-e708-4b14-9d89-e9e5bda157f7" class="">This is useful stuff to know when analyzing assembly instructions since assembly instructions can have suffixes to refer to these sizes: </p><ul id="c79930e3-82b8-4fe3-a012-16c1b2714d9c" class="bulleted-list"><li style="list-style-type:disc"><code>b</code> means byte, referring to 1 bytes. </li></ul><ul id="879f071b-18bf-4a49-93d5-12ac1a0d474b" class="bulleted-list"><li style="list-style-type:disc"><code>w</code> means word, referring to 2 bytes. </li></ul><ul id="49950ca9-e186-4338-be7f-705aed4af05a" class="bulleted-list"><li style="list-style-type:disc"><code>l</code> means double word, referring to 4 bytes. </li></ul><ul id="4f072355-f682-42de-a080-a14756a23f94" class="bulleted-list"><li style="list-style-type:disc"><code>q</code> means quad word, referring to 8 bytes. </li></ul><h3 id="346e9bc4-36d7-4157-83f8-cc9153457516" class="">Subsets of registers</h3><p id="e42ae818-0430-489a-8d0e-4e3a102ebc6e" class="">In addition to different sizes of data, there are different sizes of registers as well. These have different naming conventions and are sort of like nesting dolls. Example: </p><figure id="c0be4416-44b9-4540-852d-d7e6702f0e40" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2018.png"><img style="width:1180px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2018.png"/></a></figure><ul id="a9578d25-7fe2-4212-80ac-c07b884f95b4" class="bulleted-list"><li style="list-style-type:disc">Due to backwards compatibility. </li></ul><h3 id="78d2c21d-ba1a-493e-b669-f266c5768688" class="">Register responsibilities </h3><p id="ddafc116-3971-4f9f-a65a-2e084a91df7e" class="">Some registers take on special responsibilities during program execution: </p><ul id="30e599b5-7118-4f35-83f7-f84c739badf5" class="bulleted-list"><li style="list-style-type:disc"><code>%rax</code> stores the return value</li></ul><ul id="d68f8bd1-ebf2-41e9-8d2e-f3e4587f3fc9" class="bulleted-list"><li style="list-style-type:disc"><code>%rdi</code> stores the first parameter to a function</li></ul><ul id="a42a3783-f0e8-4686-9080-c2a27fc0a59b" class="bulleted-list"><li style="list-style-type:disc"><code>%rsi</code> stores the second parameter to a function</li></ul><ul id="c946d303-748c-4acc-9990-0497123c5234" class="bulleted-list"><li style="list-style-type:disc"><code>%rdx</code> stores the third parameter to a function</li></ul><ul id="f0894fb1-f5d5-4d74-bb48-c2f0ae65787d" class="bulleted-list"><li style="list-style-type:disc"><code>%rip</code> stores the address of the next instruction to execute</li></ul><ul id="c84f3cee-27de-4b66-9b91-1e5942d2f7e1" class="bulleted-list"><li style="list-style-type:disc"><code>%rsp</code> stores the address of the current top of the stack</li></ul><h3 id="6428b272-04b4-4495-b802-155aae176d89" class=""><code>mov</code> variants </h3><p id="0c416bd7-8370-4fa0-9d4c-fe89c9d57d27" class="">Like we saw with the registers, the instruction opcodes can also be suffixed that specifies the size of the data to move: </p><ul id="77e25990-a942-4077-adc6-2691107071b1" class="bulleted-list"><li style="list-style-type:disc"><code>movb</code></li></ul><ul id="1a478ce4-55ab-46ea-a2cf-f7f9109b7a7f" class="bulleted-list"><li style="list-style-type:disc"><code>movw</code></li></ul><ul id="fd92cce2-dd24-4c08-9871-8ab8e50cd8ab" class="bulleted-list"><li style="list-style-type:disc"><code>movl</code></li></ul><ul id="4b63de27-6df0-456e-aff9-9a1ff5d75c94" class="bulleted-list"><li style="list-style-type:disc"><code>movq</code></li></ul><p id="84f89788-30a6-48f2-a744-f4de8c927908" class="">For example, <code>movl</code> moves 4 bytes. </p><p id="60f6ab9f-8456-4c4f-ada6-5aae3340ec81" class="">A couple funky things/additions to note: </p><ul id="34c0273c-50ac-4e34-a93e-9b61dc0740f9" class="bulleted-list"><li style="list-style-type:disc"><code>movl</code> sets higher-order 32 bits to 0. </li></ul><ul id="d8e95381-a21e-45d1-b63a-718b652b4b3c" class="bulleted-list"><li style="list-style-type:disc">For some reason, you cannot use <code>movq</code> to copy an <em>immediate </em>constant of 64 bits into a register. Thus, you must use <code>movabsq</code>. </li></ul><ul id="31daffab-3afe-4ef0-9015-b896de8f6d88" class="bulleted-list"><li style="list-style-type:disc">If we want to, say, copy a smaller source into a larger destination, we can use <code>movz</code> and <code>movs</code> where <code>movz</code> fills remaining higher-order bits with 0 and <code>movs</code> sign-extends higher-order bits. <ul id="e8cfe621-e963-4913-a6e7-2a63b262ce6f" class="bulleted-list"><li style="list-style-type:circle">You can even suffix these (e.g. <code>movsbw</code>). See table in lecture slides. </li></ul><ul id="53ce60e3-8567-4a90-bc04-a46043186e83" class="bulleted-list"><li style="list-style-type:circle">A limitation of these is that the source must be from memory or a register, and the destination is a register.</li></ul></li></ul><ul id="27333f16-9a5d-4098-a193-afc2ba44e489" class="bulleted-list"><li style="list-style-type:disc"><code>cltq</code> is like a <code>movs</code> which automatically sign-extends a 32-bit register to a 64-bit register. </li></ul><h2 id="83edca13-9e9e-444e-8a35-b219654c53fb" class=""><code>lea</code></h2><p id="f4dd333b-5c8d-4b80-86af-d25256b52a73" class="">We now introduce a new instruction for arithmetic operations. </p><ul id="52e3a1f5-1dff-4a49-aa21-1c090b8cc1d6" class="bulleted-list"><li style="list-style-type:disc">Syntactically like <code>mov</code>, but quite different in reality. </li></ul><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="02717d20-d6d9-4abb-9e7d-5e82e246140f"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%"><mark class="highlight-yellow_background"><strong><code>lea</code></strong></mark>: The lea instruction copies an “effective address” from one place to another. Unlike <code>mov</code>, which copies data <strong>at the address</strong> src to the destination, <strong>lea copies the value of src itself</strong> (for example, an address rather than dereferencing) to the destination.</div></figure><ul id="5e9e2176-6536-4ca5-b565-d6949b6daa8d" class="bulleted-list"><li style="list-style-type:disc">The syntax for the destinations is the same as <code>mov</code>. The difference is how it handles the src.</li></ul><blockquote id="91d0cab9-f7d0-4f9c-a130-82a357bfd6de" class=""><code>lea</code> is <code>mov</code> without the dereferencing. </blockquote><p id="c60adb27-63fd-4ff0-8b0a-e14b45591f6f" class="">Examples: </p><figure id="3ae4c32e-1081-47a4-b3c6-5c9f01db6843" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2019.png"><img style="width:624px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2019.png"/></a></figure><p id="d8692e1b-d184-4a5f-b1f9-ce36a7d1adc4" class="">Unlike <code>mov</code>, which copies data at the address src to the destination, <code>lea</code> copies the value of src itself to the destination.</p><p id="25821de5-83bf-4626-885e-3bd9cd809ead" class="">You might think... why don&#x27;t we just use <code>mov</code> without dereferencing using parentheses. Well, recall that only one of the src or dest can be a register... not both. Thus, we can use <code>lea</code> instead. Another motivation for <code>lea</code> is that what happens if you want to use an operand form (e.g. scaling factor, addition) but do not want to dereference? You can&#x27;t. So you must use <code>lea</code>. </p><h2 id="594d7a5d-9197-49f4-8acd-c187dd9bee47" class="">Logical and arithmetic operations</h2><p id="accd530b-606d-4531-a712-34b3d3fe677f" class="">So far we have been dealing with binary instructions. We also have <strong>unary instructions</strong> that operate with only one operand:  </p><figure id="4c8e234d-6fb4-45f2-82d9-0aaad3996372" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2020.png"><img style="width:480px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2020.png"/></a></figure><p id="b057bbf6-cdf7-4933-8d4b-06152d5767ed" class="">We also have more binary operations:  </p><figure id="46e28223-3a51-448d-903f-cb640ea139f2" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2021.png"><img style="width:480px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2021.png"/></a><figcaption>Note that they both cannot be memory locations (like with <code>mov</code>). Also notice the bitwise operations. </figcaption></figure><h3 id="00a539d0-3d6d-4ec0-b43e-8404a186efc5" class="">&gt; 64-bit arithmetic </h3><p id="4c11acab-40a5-4e3b-9b96-b27e743db32d" class="">Here is a thought: if registers are only 64 bits big... how do we multiply two 64 bit numbers together? That would be larger than 64 bits but our registers cap out at 64 bits. The answer is: </p><ul id="7ea7c2f5-894c-4cbb-9cdc-217bb5d71232" class="bulleted-list"><li style="list-style-type:disc"><code>imul</code>: will truncate result to 64 bits. </li></ul><ul id="592ceef6-50d4-4056-a57e-7f573222f38a" class="bulleted-list"><li style="list-style-type:disc">If you specify one operand, it multiplies that by <code>%rax</code>, and splits the product
+across 2 registers. It puts the high-order 64 bits in <code>%rdx</code> and the low-order 64
+bits in <code>%rax</code>. </li></ul><h3 id="dcc2ab42-b621-4693-9fdd-43276c5e324c" class="">Division </h3><p id="5ce0c27a-6780-471b-947f-9da9b87ed98e" class="">Division is similar (can do 128 bit/64 bit number): </p><ul id="69f18ac1-8494-49c4-84c8-a3852445a4b6" class="bulleted-list"><li style="list-style-type:disc">dividend / divisor = quotient + remainder</li></ul><ul id="b8e4ea6e-8436-4961-8914-1f0b450e1ba0" class="bulleted-list"><li style="list-style-type:disc">The high-order 64 bits of the dividend are in <code>%rdx</code>, and the low-order 64 bits
+are in <code>%rax</code>. <ul id="b23ceb9e-336d-420b-b4dd-230101934d0a" class="bulleted-list"><li style="list-style-type:circle">This is an assumption meaning the computer will assume those values have already been moved and stored there. </li></ul></li></ul><ul id="4cee4895-760e-46d1-9b80-46d3f68ce2cb" class="bulleted-list"><li style="list-style-type:disc">The divisor is then the operand to the instruction. </li></ul><ul id="3e7b9a61-0296-47c1-b6e6-8a4a41427273" class="bulleted-list"><li style="list-style-type:disc">The quotient is stored in <code>%rax</code>, and the remainder in <code>%rdx</code>. </li></ul><blockquote id="98a3ab02-9f5a-4299-8506-b8a318f0104b" class="">Note: this is actually how division is done even with &lt; 64 bit numbers. You must sign extend the higher order bits first to fill in <code>%rdx</code> in that case. For this, use <strong><code>cqto</code></strong>. </blockquote><h3 id="018c62d8-cfa7-42df-8db1-120fb02e39d4" class="">Bit shifting</h3><ul id="ae0c2688-05ef-4f7a-a420-2a54532e4bc4" class="bulleted-list"><li style="list-style-type:disc">The following bit shifting instructions have two operands: the shift amount <code>k</code> and the
+destination to shift, <code>D</code>. </li></ul><ul id="ed404f1b-7e63-4163-94a5-3f0640fd191a" class="bulleted-list"><li style="list-style-type:disc"><code>k</code> can be either an immediate value, or the byte register <code>%cl</code> (and only that register though!) </li></ul><figure id="e1327f54-13a8-4bb5-a3fc-20aa27b35ef6" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2022.png"><img style="width:480px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2022.png"/></a><figcaption>Top 2 are identical. </figcaption></figure><ul id="138e91b6-3104-4c55-a6d0-c4f0e77a1e55" class="bulleted-list"><li style="list-style-type:disc">Note that the <code>%cl</code> rule is quite confusing. </li></ul><h2 id="d63182dc-c56c-4416-a283-79a34829fa02" class="">Reverse Engineering</h2><ul id="57f8eb65-2c6e-410b-a13d-66b582317c84" class="bulleted-list"><li style="list-style-type:disc">Our goal is to be able to understand what code generated what assembly instructions. </li></ul><ul id="6d7f9dd5-1136-4cf3-bfb0-553bf95eb7b8" class="bulleted-list"><li style="list-style-type:disc"><a href="http://godbolt.org">godbolt.org</a> is a useful website that has a Compiler Explorer where you can type in C code and it will give you x86 assembly back. Quick and easy playground. </li></ul><hr id="5e0f2d0c-cd86-46da-be35-e7414f1858c5"/><h1 id="056e611d-d825-4a57-8ff6-a25dc90f90fa" class="">Assembly: Control Flow</h1><p id="808d7e38-4d4a-4e23-a115-ed965713bea6" class="">Lecture 12 Notes. </p><p id="db9610ce-fab1-4da2-acb2-6ddccffae74e" class="">We will now talk about control flow. This is a very meta topic. </p><ul id="882819a9-19d2-4af3-9eca-b9cd202462b6" class="bulleted-list"><li style="list-style-type:disc">Who controls the instructions? Who controls which instruction to execute next? The answer: </li></ul><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="883707e3-258b-4bc3-a922-53f842e0a9d7"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%"><code><mark class="highlight-yellow_background"><strong>%rip</strong></mark></code>: register that stores the address of the next assembly instruction to execute. </div></figure><p id="23a03388-3496-40e4-88d2-a9994b870e01" class="">So, as you will see, we use this register for things like if-statements and loops. </p><ul id="ddc511c9-0f80-4aba-9124-444b41f5e8ce" class="bulleted-list"><li style="list-style-type:disc">Without control flow, <code>%rip</code> will be updated automatically to go to the next sequential instruction by adding the length of the current instruction in bytes to the <code>%rip</code> counter. </li></ul><ul id="de4a540e-307d-42b3-8515-ae9b8f835072" class="bulleted-list"><li style="list-style-type:disc">With control flow, we can interfere with <code>%rip</code> and do things like <code>jmp</code> to another instruction in memory. </li></ul><h3 id="0a9ca949-ecab-44fe-b45e-d9125bdb8409" class=""><code>jmp</code></h3><p id="e009e9da-c373-4093-b8af-e28b1622a304" class="">The <code>jmp</code> instruction is an important one. </p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="ef034023-55b4-4f2f-b686-12a1d748e07d"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%"><code><strong>jmp</strong></code>: The <code>jmp</code> instruction jumps to another instruction in the assembly code (“Unconditional Jump”). </div></figure><p id="b9487c19-1a04-49d0-9a67-eba2b18d82aa" class="">The destination can be hardcoded into the instruction (direct jump): </p><pre id="b3c1cd39-9eb0-4724-a781-020f421916f7" class="code code-wrap"><code>jmp 404f8 &lt;loop+0xb&gt; # jump to instruction at 0x404f8</code></pre><p id="f7688aed-b501-4e4c-a4d2-451d78f6fc6e" class="">The destination can also be one of the usual operand forms (indirect jump):</p><pre id="8882ee1c-07a3-4209-9e7d-a7fdc4e75e6c" class="code code-wrap"><code>jmp *%rax # jump to instruction at address in %rax</code></pre><p id="a3e74298-630f-436a-91ba-fb1beffe10b6" class="">But hold on... this is just for <strong>unconditional jumps</strong> (e.g. <code>while (true)</code>. What happens if we want a conditional jump? That is what we will see next. </p><h3 id="446ec7a8-1d9c-49c6-9279-ae29522c7bfb" class="">Conditional jumps</h3><p id="e8f46735-3a73-42db-93b0-2da37b8e939b" class="">Let us start off with this example: </p><pre id="a39d066f-cd06-412c-b989-5a1acd32a025" class="code code-wrap"><code>if (x &gt; y) {
+	// do something, a
+} else {
+	// do something, b
+} </code></pre><p id="0263a3c5-0a54-4520-92d4-45184c967d10" class="">In assembly, the conditional takes up two instructions: </p><ol type="1" id="15b4af10-9a36-4a32-8349-5764bdaa033c" class="numbered-list" start="1"><li>First, we calculate the condition result. </li></ol><ol type="1" id="3ce8c43d-61fe-428b-a925-2f8de53d5655" class="numbered-list" start="2"><li>Then, we jump to a or b based on the condition result. </li></ol><p id="b2fb2db5-5c23-4210-8ac7-cc3afc9e9930" class="">Thus, we have the following common assembly pattern for this: </p><pre id="e83b4381-45a6-4778-ac66-490dcea4e646" class="code code-wrap"><code>1. cmp S1, S2 // compare two values
+2. je [target] or jne [target] or jl [target] or ... // conditionally jump with if equal, if not equal, and if less than respectively. </code></pre><p id="ee87d63e-4670-4a0b-925f-a767bf7452de" class="">This is like <code>jmp</code> but it only jumps if the prior condition is true. To achieve this logic, there are many variants of <code>jmp</code>. That is, there are variants of <code>jmp</code> that jump only if certain conditions are true (“Conditional Jump”). The jump location for these must be hardcoded into the instruction (not stored in a register). </p><figure id="28f1063e-d115-4790-bdbb-0dcf2bd2cfef" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2023.png"><img style="width:576px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2023.png"/></a></figure><p id="ca92064c-cb8d-49e6-b003-6c71f8c36319" class="">Examples: </p><pre id="9d95c239-1e9b-48fd-a654-3a380d2a8e0b" class="code code-wrap"><code>// Jump if %edi &gt; 2
+cmp $2, %edi
+jg [target]
+
+// Jump if %edi != 3
+cmp $3, %edi
+jne [target]
+
+// Jump if %edi == 4
+cmp $4, %edi
+je [target]
+
+// Jump if %edi &lt;= 1
+cmp $1, %edi
+jle [target]</code></pre><h3 id="82a183d3-a396-4b29-aece-997a0cd102eb" class="">Condition codes</h3><p id="ea8c1bae-eb1b-4348-899c-bf666757bf95" class="">You might be wondering... how does the computer know what the value of the comparison was if we never stored it in memory to see if the jump statement should be executed? That is, </p><blockquote id="682ce1c3-b2ad-4c0e-91bb-b504698a38dc" class="">How does the jump instruction know anything about the compared values in the earlier instruction? </blockquote><ul id="bbf7495b-99ad-4d33-b79f-2f82f919c152" class="bulleted-list"><li style="list-style-type:disc">The answer is in <strong>condition codes</strong>. </li></ul><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="d30bc513-151b-461c-8d94-83dce672acac"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%"><strong>Condition codes:</strong> The CPU has <strong>special registers</strong> called condition codes that are like “global variables”. They automatically keep track of information about the most recent arithmetic or logical operation. </div></figure><ul id="9d3ef802-450d-45c9-ab2f-2089af375d4b" class="bulleted-list"><li style="list-style-type:disc"><strong>That is, </strong><strong><code>cmp</code></strong><strong> compares via calculation (subtraction) and info is stored in the condition codes. </strong></li></ul><ul id="959d32d7-9b94-492c-8f58-92c714dd0ea9" class="bulleted-list"><li style="list-style-type:disc"><strong>Then, conditional jump opcode instructions look at these condition codes to know whether to jump. </strong></li></ul><p id="cfd2bbff-0a5c-4865-88ec-1e5cc0047f1a" class="">These special condition code registers are <strong>one bit</strong> and store the results of the most recent arithmetic or logical operation. </p><p id="8c18ec51-aa5a-4d83-ae4c-163f8f8460dd" class="">Most common condition codes (note these are all <strong>booleans</strong> represented by a 1 or 0): </p><ul id="9faca113-c421-40a4-8076-463c013f586f" class="bulleted-list"><li style="list-style-type:disc"><code>CF</code>: Carry flag. The most recent operation generated a carry out of the most
+significant bit. Used to detect overflow for unsigned operations.</li></ul><ul id="399b0db6-89f4-4ec2-b797-f073432f77c8" class="bulleted-list"><li style="list-style-type:disc"><code>ZF</code>: Zero flag. The most recent operation yielded zero.</li></ul><ul id="a5d1467e-41aa-4289-8fec-8ba8acb6bd0c" class="bulleted-list"><li style="list-style-type:disc"><code>SF</code>: Sign flag. The most recent operation yielded a negative value.</li></ul><ul id="48276747-49fe-44d9-ac77-fe33292eb073" class="bulleted-list"><li style="list-style-type:disc"><code>OF</code>: Overflow flag. The most recent operation caused a two’s-complement
+overflow-either negative or positive.</li></ul><p id="d1bd71dd-7a5b-45a2-9cc1-9d026a5e3582" class="">So basically, <code>cmp</code> subtracts operand 1 from operand 2 (<code>s2 - s1</code>) and flips the values of the condition codes accordingly. </p><p id="92ac7195-53bd-4e6d-a29a-916e76cb35e4" class="">For example, you could have a string comparison using <code>strcmp</code> and it may return a positive number which the computer will know because <code>SF</code> will be marked as a 0. </p><blockquote id="dff0b4a7-849a-4717-a3f6-96f75aabcf07" class="">Read <code>cmp S1, S2</code> as compare <code>S2</code> to <code>S1</code> by calculating <code>S2 – S1</code> </blockquote><p id="355d586b-3202-4459-907b-2dcb67742a67" class="">The examples above but now with comments explaining how the comparison works: </p><pre id="962d6934-e428-4c0b-860d-0f5585e4ea32" class="code code-wrap"><code>// Jump if %edi &gt; 2
+// calculates %edi – 2
+cmp $2, %edi
+jg [target]
+
+// Jump if %edi != 3
+// calculates %edi – 3
+cmp $3, %edi
+jne [target]
+
+// Jump if %edi == 4
+// calculates %edi – 4
+cmp $4, %edi
+je [target]
+
+// Jump if %edi &lt;= 1
+// calculates %edi – 1
+cmp $1, %edi
+jle [target]</code></pre><p id="76a9e5a3-1137-4923-9b83-7c0b9552bb26" class="">You can parse through the logic yourself to figure out which condition codes are checked for each comparison, but the common ones you could theoretically just remember. Here is the chart where each conditional jump instruction is annotated telling you what condition codes it looks after):  </p><figure id="69278355-e5c5-409f-b2db-7b4db5c55a3c" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2024.png"><img style="width:720px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2024.png"/></a></figure><ul id="7628e9d8-f772-464b-b392-aa7cb93f8609" class="bulleted-list"><li style="list-style-type:disc">Note that there are also other instructions which explicitly change condition codes such as <code>test</code> which is like <code>&amp;</code> in C (so it is really <code>and</code> but instead of storing the result in a register, it just sets the condition code(s)). <ul id="1f5c9d35-26fe-4573-b5f1-399373d0baf8" class="bulleted-list"><li style="list-style-type:circle">Actually in fact, all instructions have the potential to change condition codes... except for <code>lea</code>. </li></ul></li></ul><h2 id="5d976ecf-8fb2-4b19-b16d-c1317c668701" class="">If-statements</h2><p id="655b7c54-2998-4ee5-b90b-28c7bd68e405" class="">Let us use our knowledge to fully understand how we can understand things like if-statements in assembly. </p><ul id="a7a6c63f-d1c5-490d-b123-1011f4cbab2f" class="bulleted-list"><li style="list-style-type:disc">Note that the order of instructions is kind of the opposite as it appears in C. For example, in an if-statement, if the condition is true, we jump to another location in the assembly instruction list which stores the code inside the if-statement. Then, it jumps back to the original position once done. In fact, if the if-statement evaluated to false, then the jump was never taken and you just execute sequentially as normal. Take the following example: </li></ul><figure id="b3cabd68-5f22-48f8-b3c4-b90d601ca178" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2025.png"><img style="width:624px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2025.png"/></a><figcaption>Notice how if the <code>cmp</code> is true, then the jump, <code>je</code>, moves down to a different location then back up. </figcaption></figure><ul id="d7ebf834-1c38-4ff6-818b-6f095ca70b6e" class="bulleted-list"><li style="list-style-type:disc">Ok... but what about more complicated things like if-else, else-if, etc.? </li></ul><h3 id="0fbce710-3b1e-4978-b5b9-618ea21b3cf5" class="">If-else</h3><p id="fa6fd9ce-8407-45c2-9aa6-d5e1e4217290" class="">There is a funky pattern for if-else statements which you should be familiar with. As described above in normal if-statements, if the statement is true, you jump somewhere to perform the content in the if-statement body. However, with if-else, it is kind of in reverse: </p><figure id="53bde1bb-11c4-4f7f-9387-1055a9cfda8f" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2026.png"><img style="width:336px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2026.png"/></a></figure><p id="c02d9cc2-0c53-4308-839b-b27fbc6abba5" class="">First, you compare and if true, you jump to the <strong>else</strong> body first. If not true, you simply execute the next instruction sequentially which is the if-statement body. Because of the fact that if the compare instruction evaluates to true then you go the else body, the actual comparison is reversed from what is seen in the C code (e.g. <code>if (x &gt; y)</code> is really <code>if (x &lt; y)</code>. See lecture for examples. </p><ul id="b7d1836e-f598-4941-9261-92d26490f459" class="bulleted-list"><li style="list-style-type:disc">Just always remember that you are &quot;jumping&quot; over code that you <em>do not</em> want to execute. </li></ul><h2 id="b21914c3-5057-41cf-b8ac-3b871424f0be" class="">Loops</h2><p id="71c84f8e-9753-479d-86dc-7d0b8f6f60c4" class="">Now let us talk about loops in assembly. </p><ul id="773abfc8-5415-430c-81ba-4694763cf6c7" class="bulleted-list"><li style="list-style-type:disc">Of course, C provides several looping constructs—namely, do-while, while, and for. No
+corresponding instructions exist in machine code. Instead, c<strong>ombinations of conditional tests and jumps are used to implement the effect of loops</strong>. </li></ul><p id="68a604de-0fe7-48e5-8c99-4b31a6480b6b" class="">Two common patterns we see: </p><figure id="ecc9a6d4-0e3e-416f-a144-1fbc4df2e323" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2027.png"><img style="width:528px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2027.png"/></a><figcaption>In this case, the test is for seeing if the conditional is false (i.e. reverse and compare). </figcaption></figure><p id="40b8b469-a552-401e-bcb9-0da100aaa9e6" class="">Another less common pattern (often seen in earlier versions of GCC):  </p><figure id="aee4c1ba-183b-463b-bef0-bdfe4e496a81" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2028.png"><img style="width:528px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2028.png"/></a></figure><h3 id="50eb0ce9-5a2c-4134-8258-ba2db7f4a9bb" class="">For loops</h3><p id="607a6641-ecdd-4228-b6b0-cf1f3109898a" class="">For loops actually are represented in a very similar manner to while loops. This is because you can actually represent a for loop using a while loop: </p><figure id="050ca684-b190-46c0-9b54-32e1eea559e0" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2029.png"><img style="width:240px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2029.png"/></a></figure><p id="5c057b62-26d7-4e3b-8c54-9681b0aded63" class="">Thus, we only need to add two instructions to our general pseudocode for assembly: </p><figure id="fa3008fb-1b58-4959-958b-9b51fbe47eb5" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2030.png"><img style="width:288px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2030.png"/></a></figure><hr id="e902bf59-deb8-458c-8fce-977934301f07"/><h1 id="1d2d2788-71bc-445d-9f49-7ed7bded2b9c" class="">Assembly: Function Calls and the Runtime Stack</h1><p id="efbc5b74-5bd6-4716-9f70-9a178579f97d" class="">We will wrap up our discussion of assembly with <strong>function calls</strong>. This undoubtedly might be the hardest part so pay close attention to all the little details. </p><p id="92ae425a-fefe-4772-a788-659d0a2c7181" class="">We wish to: </p><ul id="610d5a85-ffa0-41ee-9a82-3a81eb4204e1" class="bulleted-list"><li style="list-style-type:disc">Learn how assembly calls functions and manages <strong>stack frames</strong>.</li></ul><ul id="c7342c04-4ac1-40d7-85e5-8fe10fc2d52f" class="bulleted-list"><li style="list-style-type:disc">Learn the rules of <strong>register use</strong> when calling functions. </li></ul><h3 id="0e79a76d-128d-4f50-872c-1f8fe7fd2292" class="">Revisiting <code>%rip</code></h3><ul id="5994fd3a-c1c3-4d6b-8d62-7658cb938f2f" class="bulleted-list"><li style="list-style-type:disc">We mentioned previously how <code>%rip</code> points to the next instruction to execute. Let us dive deeper. </li></ul><ul id="958944a9-08c4-4898-bce3-a257387e6717" class="bulleted-list"><li style="list-style-type:disc">Let&#x27;s say you have a <code>jmp</code>. In the actual machine code binary representation, the binary does not actually store the address you should jump to. Instead it just stores the byte offset. That is, it says how many bytes you should move further down the assembly line to get to the next instruction to execute. That is, <code>jmp</code> changes the value of <code>%rip</code>. </li></ul><h2 id="850a373b-3878-4a20-8af6-4af93b1a2b52" class="">Calling functions</h2><p id="ca2b1767-b5c4-4359-834c-be72602bd8b3" class="">We first must understand the terms <strong>caller </strong>and <strong>caller</strong>. </p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="bd07aea2-9450-4fe8-bcde-c2266c4163a2"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%"><strong>caller</strong> function calls the <strong>callee</strong> function. That is, the function that is being called is callee the callee and the function that is calling the other function is the caller. </div></figure><p id="ba733a8c-c712-4e99-bbf9-725c5fbd6a67" class="">To call functions in assembly, we need to do a couple things: </p><ul id="cae33c62-9e13-4c80-a02d-e57796814095" class="bulleted-list"><li style="list-style-type:disc"><strong>Pass Control</strong> – <code>%rip</code> must be adjusted to execute the callee’s instructions, and
+then resume the caller’s instructions afterwards.</li></ul><ul id="61aa8622-1a94-417d-82e0-8fb5a874dbad" class="bulleted-list"><li style="list-style-type:disc"><strong>Pass Data</strong> – we must pass any parameters and receive any return value.</li></ul><ul id="a2d9cf25-0828-4a6a-8ce2-07c2f209540d" class="bulleted-list"><li style="list-style-type:disc"><strong>Manage Memory</strong> – we must handle any space needs of the callee on the
+stack.</li></ul><p id="e1e83f0e-9eec-43d9-be25-605aaf001735" class="">Remember that function calls work by adjusting the stack and each stack frame represents a function call. So does assembly interact with the stack? Via a special register: </p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="f9da2adb-85a7-4e75-a8df-f000043a6b64"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%"><mark class="highlight-yellow_background"><strong><code>%rsp</code></strong></mark> is a special register that stores the address of the current “top” of the
+stack (the bottom in our diagrams, since the stack grows downwards).</div></figure><p id="98123ad4-cfce-4098-83fb-67266778f327" class="">Examples: </p><div id="61c5eaf5-51f7-48ab-be25-5c7037c4dbd9" class="column-list"><div id="9d810ad9-7134-48f4-abf0-759c332c605f" style="width:33.333333333333336%" class="column"><figure id="4235f741-9afc-46f3-8ebb-467c55328a15" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2031.png"><img style="width:192px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2031.png"/></a></figure></div><div id="c6b34b69-4b80-4113-a44e-7bc10875f2d5" style="width:33.333333333333336%" class="column"><figure id="956602f8-c2a5-4f5c-8d81-d8640e34de80" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2032.png"><img style="width:240px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2032.png"/></a></figure></div><div id="95a37c96-d6c5-4369-ac67-c4afb630ac71" style="width:33.33333333333333%" class="column"><figure id="163adebb-455d-4c73-9319-66741088853c" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2033.png"><img style="width:1036px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2033.png"/></a></figure></div></div><blockquote id="056b915b-3024-4a2a-b42a-fcd455fab727" class=""><code>%rsp</code> must point to the same place before a function is called and after that
+function returns, since stack frames go away when a function finishes</blockquote><h3 id="7ca6f57e-8651-4b31-8791-30e567ce7435" class="">Interacting with the stack</h3><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="77f3a611-696a-4eda-a938-923bc02b0fab"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%">The <strong><code>push</code></strong> instruction pushes the data at the specified source onto the top of
+the stack, adjusting <code>%rsp</code> accordingly. </div></figure><ul id="f71d3d4e-52b4-47e5-97f2-03a1d82c9f19" class="bulleted-list"><li style="list-style-type:disc">Remember that the stack grows downwards to what push does is make some room on the top of the stack by decrementing <code>%rsp</code>. </li></ul><figure id="fb93c32c-ff82-40ac-86ca-740d97681986" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2034.png"><img style="width:288px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2034.png"/></a><figcaption>Only works in 8 byte increments. </figcaption></figure><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="24b0377e-46cf-4b09-8766-f6432fe21768"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%">The <strong><code>pop</code></strong> instruction pops the topmost data from the stack and stores it in the
+specified destination, adjusting <code>%rsp</code> accordingly. </div></figure><ul id="1bfafb6a-c297-4b99-b56e-7c2f200f5543" class="bulleted-list"><li style="list-style-type:disc">Since stack grows downwards, we are shrinking the stack by adding 8 bytes to <code>%rsp</code>. </li></ul><figure id="25748b61-7fc2-4e6a-a950-3cdf8b24576c" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2035.png"><img style="width:336px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2035.png"/></a></figure><ul id="558a325b-0627-4e3e-972e-fc2d61d010e4" class="bulleted-list"><li style="list-style-type:disc">Note that <code>pop</code> does not remove data/zero out data it is popping. </li></ul><h3 id="23523332-885d-452d-a944-8079c228ab93" class="">Passing control </h3><p id="50a6fb35-517a-4c07-9c1a-3d755c15adf1" class=""><strong>We need to remember where we left off in a certain function when we call another function</strong> (i.e. what instruction to execute next after the callee function is done executing). But the problem is <code>%rip</code> will be pointing at different things because the callee will be updating it. So we bookmark our spot by appending it to the top of the stack before we move to the instructions for the callee. Then, once we are done, we take the bookmarked value from the top of the stack and store it back into <code>%rip</code>. Then, we adjust <code>%rsp</code>. </p><p id="8e933805-a69b-4d3f-a04b-cad5506fd248" class="">Example (5 total sequences):  </p><div id="0e8b54ef-95e3-4f40-bd7e-ef31ad01417a" class="column-list"><div id="91552eb3-b718-4d70-ab27-cd23b2579af5" style="width:33.33333333333333%" class="column"><figure id="396361eb-9472-4015-aeb7-9a50e94fcd5c" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2036.png"><img style="width:336px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2036.png"/></a></figure><figure id="6d6ad42d-c6f5-4a43-b050-6dc8a9cbc0f0" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2037.png"><img style="width:1428px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2037.png"/></a></figure></div><div id="bd485fe3-5b6e-4e3b-9d5c-0ab8a034c2fd" style="width:33.33333333333333%" class="column"><figure id="a179dd16-52ad-41d3-af17-706041b68343" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2038.png"><img style="width:336px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2038.png"/></a></figure><figure id="aaac4900-86ab-46a8-93f2-eb2bfaf4ba41" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2039.png"><img style="width:384px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2039.png"/></a></figure></div><div id="a9508dd2-4b3e-4bfc-b1cb-4cceaf0e3527" style="width:33.33333333333334%" class="column"><figure id="4d04e618-2cfd-4a12-9306-76dea9eef370" class="image"><a href="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2040.png"><img style="width:1420px" src="x86%20Assembly%20Notes%20873c7931f7fa469fa316aa785ce99070/Untitled%2040.png"/></a></figure></div></div><p id="e3225daf-cbf5-42a4-b9f2-d3de61b4e3ca" class="">But how does this happen in assembly? Via these new instructions: </p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="cc26ea02-4320-4920-941e-9ba3dfed43da"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%"><strong><code>call</code></strong>: instruction that pushes the address of the instruction immediately following the call instruction onto the stack and sets <code>%rip</code> to point to the beginning of the function (its instructions in assembly that is) specified by the operand. </div></figure><ul id="8f45c9cc-a57c-4715-9281-9d283b9b741a" class="bulleted-list"><li style="list-style-type:disc">In the diagram above, <code>call</code> does the first 3 steps. </li></ul><p id="c26a3429-dea0-4586-811f-91f2cf5685f5" class="">The <code>ret</code> instruction does the opposite: </p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="272bfb13-eb45-434e-8af2-e63da54cf7a5"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%"><strong><code>ret</code></strong>: instruction that pops the instruction address from the top of the stack (i.e. the one the was appended by <code>call</code> and stores it in
+<code>%rip</code>. </div></figure><h3 id="6fabff7d-8763-4b27-a343-fbf71e5f1ac7" class="">Passing data</h3><ul id="018d8827-5af2-4b7e-86eb-1aeb53268e7a" class="bulleted-list"><li style="list-style-type:disc">Recall that several registers are dedicated for holding argument values for parameters. </li></ul><blockquote id="e428b577-d484-4144-bc7a-b6d46ae7768e" class="">That is, there are <strong>special registers that store parameters and the return value</strong>.</blockquote><ul id="bb034cd4-1079-47f5-8f5b-2c76ab5d5439" class="bulleted-list"><li style="list-style-type:disc">However, we must <em>manually </em>put these values into the corresponding registers. </li></ul><blockquote id="5313b5d9-2281-4fe0-8ed6-6a2a5e3aba4b" class="">To call a function, we must put any parameters we are passing into the correct
+registers. (<code>%rdi</code>, <code>%rsi</code>, <code>%rdx</code>, <code>%rcx</code>, <code>%r8</code>, <code>%r9</code>, in that order). <ul id="ce015b98-1060-46dc-8142-5833211d20ac" class="bulleted-list"><li style="list-style-type:disc">Then, the callee can expect the parameters to be stored in these registers. </li></ul></blockquote><ul id="c208c928-53f9-43e0-9cba-d35cdfcc41f8" class="bulleted-list"><li style="list-style-type:disc">Note: if there are more than 6 parameters, then the next ones are stored on the stack. </li></ul><ul id="5be9bb6f-1080-4d87-9f63-08f1d7f02756" class="bulleted-list"><li style="list-style-type:disc">The callee should put the return value into <code>%rax</code>. </li></ul><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="4d62c8d9-3869-4a88-a971-c5328b3a12ed"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%"><strong><code>%rax</code></strong>: stores the return value of the callee. Return value must manually be placed into <code>%rax</code>. </div></figure><p id="c1e42307-b9c1-4f87-b8c2-e23bc9ccca30" class="">Some common themes you will see in the assembly generated: </p><ul id="d700fe70-9f76-4217-82a2-cddfe66af24e" class="bulleted-list"><li style="list-style-type:disc">Parameters are added to registers. Note that this is generally done in reverse order. </li></ul><p id="292c05bc-8556-4cee-bcc4-b884e6937188" class="">A lot of prepwork to call a function before the function is actually called. </p><h3 id="25cac26e-5b19-415d-8ec3-97f8f09f890e" class="">Local storage and memory management</h3><p id="cbc95052-adb1-4007-92d5-e731221aa9fd" class="">We have not really talked much about things like local variables and how that works. In actuality, we store as many local variables into registers as we can and then after those fill up, we start allocating the data to the stack. There are also three times in which we just go straight to the stack (i.e. don&#x27;t even attempt to store into register): </p><ul id="89375928-1b11-458b-9c6f-b4d7a5ef1284" class="bulleted-list"><li style="list-style-type:disc">Arrays<ul id="307b9e5b-d991-4d94-92aa-ac1f97edb617" class="bulleted-list"><li style="list-style-type:circle">Can&#x27;t do things like addressing and pointer arithmetic on the registers. </li></ul></li></ul><ul id="b6c97b36-d818-4026-959a-0c98c7510fa2" class="bulleted-list"><li style="list-style-type:disc">Simply no more registers available</li></ul><ul id="6b0a69c8-66d9-40d3-b533-b798d734ab3c" class="bulleted-list"><li style="list-style-type:disc"><code>&amp;</code> operator is used. Registers don&#x27;t have corresponding addresses. </li></ul><p id="c74f3347-e76c-44f2-be40-159853eeda48" class="">As an aside, even without function calls, we might need to adjust the stack pointer before adding things like local variables. </p><h2 id="4c49e6a4-faf6-4bab-9825-b8b0de6ead8b" class="">Register restrictions</h2><ul id="af267d1c-7da0-4d5f-a5d5-1e94b740b86e" class="bulleted-list"><li style="list-style-type:disc">There is only one copy of registers for all programs and functions. Thus... </li></ul><blockquote id="31b3608d-b7e1-4dae-81b5-3a1a0a8bd204" class="">Problem: what if <code>funcA</code> is building up a value in register <code>%r10</code>, and calls funcB
+in the middle, which also has instructions that modify <code>%r10</code>? funcA’s value will
+be overwritten! </blockquote><p id="0df17a2d-d074-4184-bb93-d1976c8b76b8" class="">Thus, we must make some rules of the road to which the instructions must abide by when moving things in and out of registers. </p><blockquote id="730565bb-50f7-463d-8a2b-1d6eddc5b0d8" class="">Solution: make some “rules of the road” that callers and callees must follow
+when using registers so they do not interfere with one another.</blockquote><p id="22aee189-67a5-4e63-b8d0-64c94246a7a3" class="">
+</p><p id="22dd579f-3bba-45e9-af32-8abdc3fc7a91" class="">
+</p></div></article></body></html>

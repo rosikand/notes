@@ -1,0 +1,664 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Lecture 7: Stack and Heap </title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	text-indent: -1.7em;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+}
+
+.simple-table-header {
+	background: rgb(247, 246, 243);
+	color: black;
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(145, 145, 142, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(187, 132, 108, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(215, 129, 58, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 148, 51, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(108, 155, 125, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(91, 151, 189, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(167, 130, 195, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(205, 116, 159, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(225, 111, 100, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(145, 145, 142, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(187, 132, 108, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(215, 129, 58, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 148, 51, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(108, 155, 125, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(91, 151, 189, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(167, 130, 195, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(205, 116, 159, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(225, 111, 100, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="1ae29f5d-bc2d-4d01-8fdf-31a4c8a7f1c9" class="page sans"><header><h1 class="page-title">Lecture 7: Stack and Heap </h1></header><div class="page-body"><p id="0fc33e5d-698b-4474-8870-309d14bfa41b" class="">We will now delve deeper into memory and the subdivisions of memory. </p><figure id="1827c693-c401-499b-a518-acb1bb4b3def" class="image"><a href="Lecture%207%20Stack%20and%20Heap%201ae29f5dbc2d4d018fdf31a4c8a7f1c9/Untitled.png"><img style="width:192px" src="Lecture%207%20Stack%20and%20Heap%201ae29f5dbc2d4d018fdf31a4c8a7f1c9/Untitled.png"/></a><figcaption>sections of memory </figcaption></figure><nav id="72e54c31-5562-460c-9ff7-805567b60ff9" class="block-color-gray table_of_contents"><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#bf7bdf6b-3c69-4c37-83c1-3468d76b4d5e">Stack</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#28305f26-f80a-4b1a-870b-a20417a0a840">Limitations</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#fb0162ae-fd7f-43db-a1a6-ddd7eb7e6756">Heap </a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#259e4c61-90b4-4300-a59a-28b8864d805f">Heap Allocation </a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#58d0529b-4f27-474a-ae60-c52ce356929a"><code>malloc</code></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#ddb31040-77b7-4d82-9b89-52849f0dfffb"><code>assert</code></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#0dd54a7a-e296-4bad-bfc3-f54636b26501"><code>calloc</code></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#419815ae-ceef-49b2-b50a-945e4b9e9877"><code>strdup</code></a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#452408fe-104e-4a2e-9cb8-b67ff9d70dd0">Freeing Memory </a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#fba60c41-a712-4ba8-99b4-9c863166d01f">Memory leak</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#5ad0e644-887a-43c7-bd34-e3fcdbcf3d02">Realloc </a></div></nav><hr id="6dfdd662-c997-4804-930c-758cafbdeb5a"/><h2 id="bf7bdf6b-3c69-4c37-83c1-3468d76b4d5e" class="">Stack</h2><ul id="b3b9333f-c902-4fc6-acbd-a6d9876789a9" class="bulleted-list"><li style="list-style-type:disc">Section in memory where things like <strong>local variables</strong> and parameters live. </li></ul><ul id="910fa784-6c6b-43ee-8f6d-bd7944e999c8" class="bulleted-list"><li style="list-style-type:disc"><strong>Grows downward and shrinks upward</strong>. Kind of works like the stack data structure in that aspect. </li></ul><ul id="0c7e9d4d-3227-4e07-b317-9e4dc0f86bc9" class="bulleted-list"><li style="list-style-type:disc">Each function call has its own <strong>stack frame</strong>. Once the function is done, the stack frame is deleted and the stack shrinks upward. <ul id="55b66d19-89b1-4c88-ac90-848226f0aaf1" class="bulleted-list"><li style="list-style-type:circle">See diagrams in the slides. </li></ul><ul id="7fdbc300-2d2d-47e8-962b-d3cd3799e74f" class="bulleted-list"><li style="list-style-type:circle">When stack frame is done, stack does not delete memory it took up since stack is fixed size. Instead, it denotes that that particular spot in the stack is free to use. </li></ul></li></ul><ul id="96c8764b-5ad7-4000-85fe-a1a6959c6819" class="bulleted-list"><li style="list-style-type:disc">Stack is set to <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>8</mn></mrow><annotation encoding="application/x-tex">8</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">8</span></span></span></span></span><span>﻿</span></span> <strong>MB</strong> (static). </li></ul><ul id="41a9f139-1049-4200-98a0-166f5d49130e" class="bulleted-list"><li style="list-style-type:disc"><strong>Stack overflow</strong> is when you use up all of the memory in the stack at once. </li></ul><h3 id="28305f26-f80a-4b1a-870b-a20417a0a840" class="">Limitations</h3><ul id="4fe6bd35-22cb-4e9d-a264-f1e271403c0c" class="bulleted-list"><li style="list-style-type:disc">Say we create an array in a function. When we return the array, like with parameter passing, it is automatically casted to a pointer. However, once the function is done (i.e. returns something), the stack frame goes away and we can no longer access the value being pointed to. <ul id="f48cf0f6-1f73-4053-b0b3-5b0b8ac1fe32" class="bulleted-list"><li style="list-style-type:circle">Problem: local variables go away when a function finishes. These characters will thus no longer exist, and the address will be for unknown memory!</li></ul></li></ul><ul id="166e24cd-2137-4512-9bbf-3b3f1f6a7513" class="bulleted-list"><li style="list-style-type:disc">This is a problem! We need a way to have memory that doesn&#x27;t get cleaned up when a function exits! </li></ul><ul id="fbb6f627-4a36-40e6-99f8-5dff923167cb" class="bulleted-list"><li style="list-style-type:disc">To solve this, we introduce the heap and dynamic memory! </li></ul><hr id="3bb9caf0-21b9-40bf-a04e-1471bba6e185"/><h2 id="fb0162ae-fd7f-43db-a1a6-ddd7eb7e6756" class="">Heap </h2><p id="e3f887ee-ec66-4d37-9610-1aa7f537bdc3" class="">To solve the limitations of the stack, we introduce a new section of memory called the heap which allows us to dynamically allocate memory manually. </p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="4e583424-ebf4-49e5-92a7-e85b9d8a6e51"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%"><strong>Heap</strong>: The heap is a part of memory that you can manage yourself via dynamic memory allocation. </div></figure><ul id="5db69caa-81c6-40a3-a4b3-422886b8eec6" class="bulleted-list"><li style="list-style-type:disc">Unlike the stack, <strong>you are responsible</strong> for how you manage (allocate and free) memory on the heap. </li></ul><ul id="24cc8f72-4ec6-43ec-9b85-cce1a65de8b7" class="bulleted-list"><li style="list-style-type:disc">Memory only goes away once you manually delete it. </li></ul><ul id="c05a683a-f05e-4d64-b0a4-0cf069b3984a" class="bulleted-list"><li style="list-style-type:disc">Heap<strong> grows upward</strong>.</li></ul><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="df368d13-a88b-4d58-82e3-77eecae112bb"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%"><strong>Dynamic memory</strong>: memory that can be <span style="border-bottom:0.05em solid">allocated</span>, <span style="border-bottom:0.05em solid">resized</span>, and <span style="border-bottom:0.05em solid">freed</span> during program runtime (while the program is running). </div></figure><h2 id="259e4c61-90b4-4300-a59a-28b8864d805f" class="">Heap Allocation </h2><h3 id="58d0529b-4f27-474a-ae60-c52ce356929a" class=""><code>malloc</code></h3><p id="18b8d4cb-bb85-4b9a-979b-0c7836837b94" class="">The main command/function to allocate memory on the heap is <strong><code>malloc</code></strong>: </p><pre id="439bbd34-0155-4522-b49c-d57c2b8c7b22" class="code code-wrap"><code>void *malloc(size_t size); </code></pre><ul id="4f866f2a-7fe0-443d-b33c-965209e37e70" class="bulleted-list"><li style="list-style-type:disc">Size is how many bytes you wish to allocate. <ul id="6f2405b2-0ada-4228-93b3-ea50063621d1" class="bulleted-list"><li style="list-style-type:circle">Remember this is byte-wise (not element-wise!) to make sure to use <code>sizeof</code>. </li></ul></li></ul><ul id="82486c17-3fb1-4305-a840-300cb884647f" class="bulleted-list"><li style="list-style-type:disc">The function <code>malloc</code> goes to the heap, finds of block of contiguous memory returns of the requested size, and returns a pointer to the address which is the location of the start of the segment of memory block. </li></ul><ul id="e9ede7a8-cb79-403b-aea3-a1886fb4d6fb" class="bulleted-list"><li style="list-style-type:disc">Different than the stack since we can only interface with the heap via pointers (not even things like arrays).  </li></ul><ul id="095e1daa-130a-4bdd-9687-d39652437908" class="bulleted-list"><li style="list-style-type:disc">Fortunately, <code>malloc</code> does not care what you do with the memory (i.e. the type of the data that is stored). As such, the return type of <code>malloc</code> is a <strong>generic pointer</strong>). </li></ul><ul id="e9890faf-1702-46ab-8254-e3cfa6594a6c" class="bulleted-list"><li style="list-style-type:disc">Returns <code>NULL</code> when there is not enough memory given the requested size. <ul id="7e8197a5-03e7-4e53-8c62-e3f98a201533" class="bulleted-list"><li style="list-style-type:circle">This is dangerous because we may encounter things like memory leaks and errors which can alter the functionality of the program. Thus, we use the <code>assert()</code> command which we needs to be placed after every heap allocation. </li></ul></li></ul><h3 id="ddb31040-77b7-4d82-9b89-52849f0dfffb" class=""><code>assert</code></h3><p id="19576d80-1d69-45ea-ab05-ca29bb5090dc" class="">Important: </p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="43f929f2-4e45-4ece-9d15-7bb8a53e6997"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%"><strong><code>assert()</code></strong>: a function that takes in a condition and terminates the program if the condition is false. This should be placed after every <code>malloc</code> call. </div></figure><p id="e4a44aab-5ab7-4a4e-ac0c-09b03c88948a" class="">Example: </p><pre id="30f88bb3-1300-4a81-a249-11205fc5a837" class="code code-wrap"><code>int *arr = malloc(sizeof(int) * len);
+assert(arr != NULL); // if = NULL, terminate immediately </code></pre><ul id="d6c42cb7-9dd9-4338-8241-2747bad596ef" class="bulleted-list"><li style="list-style-type:disc">Note: since the heap is dynamically allocated, there may be previously used/garbage values at the spot of the current allocation. It is your job to zero this memory out before using it if zeroing out is required. </li></ul><h3 id="0dd54a7a-e296-4bad-bfc3-f54636b26501" class=""><code>calloc</code></h3><p id="4c7eb77c-3d06-4f3d-bf0c-80f4b6641e01" class="">To help with this there is also another command to allocate memory called <strong><code>calloc</code></strong>: </p><pre id="9a8b8214-ba67-40a7-9177-d91cfb334be5" class="code code-wrap"><code>void *calloc(size_t nmemb, size_t size);</code></pre><ul id="d81b8ab7-6fe6-4a38-8eaf-94b50ad20923" class="bulleted-list"><li style="list-style-type:disc">Same thing as <code>malloc</code> except it zeroes out the memory for us. <ul id="d4c1119b-d78a-4c3a-b81b-92d75d722d73" class="bulleted-list"><li style="list-style-type:circle">Also has different signature. You need to specify the number of elements you wish to allocate and the size of the element. The number of bytes allocated is then these two multiplied together. <ul id="0d54ed8a-1c3a-49b4-ba8c-4e859f2ca0ff" class="bulleted-list"><li style="list-style-type:square">The reasoning and origin behind this was for allocating arrays, but it is now useful for all other things. </li></ul></li></ul></li></ul><p id="376a50be-b9f1-4171-9750-60f7aba80710" class="">The following uses of <code>malloc</code> and <code>calloc</code> are equivalent: </p><pre id="e9f7de9f-dc8f-4a06-9c66-39bb0c7b2d34" class="code code-wrap"><code>// allocate and zero 20 ints
+int *scores = calloc(20, sizeof(int));
+
+// alternate (but slower, more lines of code)
+int *scores = malloc(20 * sizeof(int));
+for (int i = 0; i &lt; 20; i++) scores[i] = 0; // zero out the bytes</code></pre><ul id="ab82ebcc-9626-40af-b25b-7684a10757f6" class="bulleted-list"><li style="list-style-type:disc">Because <code>calloc</code> automatically zeroes things out for you, it is a more computationally expensive operation. Thus, you should only use it when necessary. Indeed, you actually won&#x27;t need to use it that often since you will probably overwrite the values already there anyway. </li></ul><h3 id="419815ae-ceef-49b2-b50a-945e4b9e9877" class=""><code>strdup</code></h3><p id="eaf132c9-7f6c-447d-bc41-ca0915721ff2" class="">Indeed, there is another command for allocation called <code>strdup</code>. This is useful for strings. Instead of having to copy the characters into the dynamically allocated array, C has a nice function:  </p><pre id="53798796-cff5-4968-970d-4eb9610b2ded" class="code code-wrap"><code>char *strdup(char *s); // function signature, must take in char * </code></pre><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="775d845b-f03b-4b1b-ae8b-9b85e58ffcba"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%"><code><strong>strdup</strong></code><strong><strong>:  </strong></strong>a convenience function that returns a null-terminated, heap allocated string with the provided text, instead of you having to malloc and copy in the string yourself. <pre id="bfa66e65-ea54-40a6-abcd-70db502527cc" class="code code-wrap"><code>char *str = strdup(&quot;Hello, world!&quot;);</code></pre></div></figure><hr id="75b909a0-dfd1-4b0a-8bb5-0bbdf3d6c9d9"/><h2 id="452408fe-104e-4a2e-9cb8-b67ff9d70dd0" class="">Freeing Memory </h2><p id="dd6ecc93-5f05-4389-ad0d-df0faa4825fc" class="">We must clean up after ourselves since we are dynamically allocating memory (there is no auto-delete memory like in the stack). </p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="2ac722c1-458f-4ada-a7e3-df342815ed26"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%"><code><strong>free</strong></code><strong>: </strong>We delete memory using <code>free</code> by passing in the starting address on the heap for the memory you no longer need.<pre id="fd9e6264-6e44-45b2-9d69-5856124e50c2" class="code code-wrap"><code>void free(void *ptr);</code></pre></div></figure><p id="74bb34d4-79c5-4455-ae53-20f5deeb7ab3" class="">Example:</p><pre id="83dfcbdb-de16-4862-81ed-daa8717ac617" class="code code-wrap"><code>char *bytes = malloc(4); 
+free(bytes); </code></pre><p id="2760b4f8-57ea-4e56-b00c-bee765c39fe2" class="">Some notes: </p><ul id="dc9f06b2-a2be-4eee-8ff9-e3112268ffab" class="bulleted-list"><li style="list-style-type:disc">Cannot free part of the allocation, you must free the <strong>entire</strong> thing. </li></ul><ul id="1b1b07ed-d091-4b0b-9f81-291a3b08d10d" class="bulleted-list"><li style="list-style-type:disc">Even if you have multiple pointers to the same block of memory, <strong>each memory block should only be freed once</strong>. </li></ul><ul id="1bbf72b0-c9dc-4960-b405-4fcf249e33d1" class="bulleted-list"><li style="list-style-type:disc">You may need to free memory allocated by other functions if that function expects the caller to handle memory cleanup (i.e. <code>strdup</code>). <ul id="041fccbd-bda7-429c-90a8-e17cdf98187d" class="bulleted-list"><li style="list-style-type:circle">You may need to write functions that should inform the caller they must free the memory. </li></ul></li></ul><h3 id="fba60c41-a712-4ba8-99b4-9c863166d01f" class="">Memory leak</h3><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="a81817cb-c151-4782-b36e-6a100eb4ecdf"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%"><strong>Memory leak</strong>: when you allocate memory on the heap, but do not free it (and lose the pointer to it?). </div></figure><ul id="7f6dbbb3-ef71-4a5b-aa4c-4f214fe84704" class="bulleted-list"><li style="list-style-type:disc">Might run out of memory if you never free. </li></ul><ul id="79e14bb1-5040-4819-a140-b02e933c8df6" class="bulleted-list"><li style="list-style-type:disc">Rarely cause crashes. As such, we recommend not to worry about freeing memory until your program is written. Then, go back and free memory as appropriate. </li></ul><ul id="ef3768e2-1199-4d59-8cba-8f305401960b" class="bulleted-list"><li style="list-style-type:disc">Valgrind useful for finding memory leaks. </li></ul><hr id="842e6f74-5820-46c6-9cb6-7ee8a5b5da96"/><h2 id="5ad0e644-887a-43c7-bd34-e3fcdbcf3d02" class="">Realloc </h2><p id="dde9052d-df4f-49ad-bfee-ffee48a6fcc3" class="">We can use <code>realloc</code> to update the size of a dynamically allocated array. </p><p id="3ee5266e-816b-4e94-9f66-a04726267c8e" class="">
+</p></div></article></body></html>

@@ -1,0 +1,656 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Lecture 2: Bits and Bytes; Integer Representations</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	text-indent: -1.7em;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+}
+
+.simple-table-header {
+	background: rgb(247, 246, 243);
+	color: black;
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(145, 145, 142, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(187, 132, 108, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(215, 129, 58, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 148, 51, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(108, 155, 125, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(91, 151, 189, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(167, 130, 195, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(205, 116, 159, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(225, 111, 100, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(145, 145, 142, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(187, 132, 108, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(215, 129, 58, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 148, 51, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(108, 155, 125, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(91, 151, 189, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(167, 130, 195, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(205, 116, 159, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(225, 111, 100, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="61aa4a6f-c9c0-4ce3-89a5-eb5200473cf9" class="page sans"><header><h1 class="page-title">Lecture 2: Bits and Bytes; Integer Representations</h1></header><div class="page-body"><p id="c8927500-741c-47b1-837b-9975c549ff69" class=""><strong>Table of Contents</strong>: </p><nav id="bdfb261b-a7ac-4014-9526-3c4ac536fee0" class="block-color-gray table_of_contents"><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#744a8981-085e-45e9-b4b3-c8d6b0117bec">Bits and Bytes</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#8512b66f-740c-4c09-9747-f10145662d1d">Base 10 </a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#d9799953-799c-4798-847b-c48dfe441311">Base 2 (Binary) </a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#52c75ba7-ca7e-4d4b-afc4-7aa57c7d00c9">Base 10 to Base 2</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#5d96316d-dddc-45f1-88c7-cfe421fc7db9">Hexadecimal</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#88013bbf-5483-4fc0-ad73-90253fa399ad">Prefixing</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#70234be5-c6d5-486c-9854-1d68961f32a7">Integer representations and unsigned integers</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#0fed57cf-06b6-42a0-b86c-297b94429dca">Sign magnitude representation</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#91707434-ba65-4871-973a-7cfc689732da">Two&#x27;s compliment</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#5adc4604-a284-47ce-bb84-ae86dedbadd5">Overflow</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#09ecaa9a-ac5e-49e6-9d63-d3dfe0a0a94a">Casting and Combining Types</a></div></nav><p id="fd4f52aa-3244-4b93-908c-f628134c33e6" class="">Topic: How can a computer represent integer numbers?</p><h2 id="744a8981-085e-45e9-b4b3-c8d6b0117bec" class="">Bits and Bytes</h2><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="803ba59f-1c68-49d9-9e7b-2b918b027ecc"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%"><strong>Bit</strong>: a bit is either a 0 or 1. It models state (&quot;on&quot; or &quot;off&quot;). </div></figure><ul id="6f8dbd71-b75a-4e5b-b173-4f0ceee308e8" class="bulleted-list"><li style="list-style-type:disc">Bits are modeled in software using 0s and 1s whereas in hardware, they are transistors on a chip. </li></ul><p id="bdc27d3d-191c-4e31-ad95-a6ec50bb6a91" class="">Since one bit doesn&#x27;t allow much space, we can combine bits to form a byte:</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="58be8447-e2c5-41fa-99ef-1640d81377b1"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%"><strong>Byte:</strong> a group of 8 bits. A <strong>nibble</strong> is a group of 4 bits. </div></figure><ul id="6f41b201-ebb1-43ac-a423-2c3c8f460dfa" class="bulleted-list"><li style="list-style-type:disc"><strong>Computer memory </strong>is simply a giant array of bytes (can&#x27;t store at the bit level). We access the computer memory (called a stack or heap) via addresses written in Hexadecimal. </li></ul><p id="9f42a082-000d-4733-910c-b06f001b2079" class="">So how can we represent data (specifically we will talk about integers in this lecture) in computer memory? The goal is to fundamentally understand how all of the high-level functionality of a computer can be translated down into the lowest level: 0s and 1s. </p><p id="4b37209f-89b9-4f43-abc3-9d3429ea7f53" class="">For integer representation, we will study number systems of different bases. Of course, the fundamental one is base-2 which is binary because binary represents the 0s and 1s. </p><h3 id="8512b66f-740c-4c09-9747-f10145662d1d" class="">Base 10 </h3><figure id="d1d19da8-e8a6-4c01-9092-3a98f9cea3ca" class="image"><a href="Lecture%202%20Bits%20and%20Bytes;%20Integer%20Representations%2061aa4a6fc9c04ce389a5eb5200473cf9/Untitled.png"><img style="width:240px" src="Lecture%202%20Bits%20and%20Bytes;%20Integer%20Representations%2061aa4a6fc9c04ce389a5eb5200473cf9/Untitled.png"/></a><figcaption>This image sums up the number system we are all familiar with. </figcaption></figure><h3 id="d9799953-799c-4798-847b-c48dfe441311" class="">Base 2 (Binary) </h3><p id="42e99664-4fd7-4fc5-98c5-47dd7c93ee9a" class="">Ahh... binary. We will work a lot with binary in this class so be sure to become familiar with it now. </p><p id="5511a71f-fb0a-4d07-94eb-1ceb06f3676a" class="">We can think of the places in a binary number as powers of 2 (hence why we call it base-2). </p><div id="e8fd12aa-edf2-451f-92c8-45c8b8a00de7" class="column-list"><div id="447f45a7-321f-4420-b3a7-c3abfb572dd9" style="width:100%" class="column"><figure id="cf275ce9-76a9-44b1-850d-f64c5fdf85ec" class="image"><a href="Lecture%202%20Bits%20and%20Bytes;%20Integer%20Representations%2061aa4a6fc9c04ce389a5eb5200473cf9/Untitled%201.png"><img style="width:144px" src="Lecture%202%20Bits%20and%20Bytes;%20Integer%20Representations%2061aa4a6fc9c04ce389a5eb5200473cf9/Untitled%201.png"/></a></figure></div><div id="b5d8f4a7-e80f-4c30-912c-0bc924247453" style="width:100%" class="column"><figure id="86de196c-ceb6-42b0-85d2-dd446ef66c78" class="equation"><style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><div class="equation-container"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span></span></div></figure></div><div id="504b3269-4ebd-43dd-8932-d8a17107c439" style="width:100%" class="column"><figure id="19d2af5d-be83-4639-802d-64d61b615533" class="image"><a href="Lecture%202%20Bits%20and%20Bytes;%20Integer%20Representations%2061aa4a6fc9c04ce389a5eb5200473cf9/Untitled%202.png"><img style="width:860px" src="Lecture%202%20Bits%20and%20Bytes;%20Integer%20Representations%2061aa4a6fc9c04ce389a5eb5200473cf9/Untitled%202.png"/></a></figure></div></div><p id="5e020dca-1e80-4330-a94a-b20dddfbf30b" class="">We can harness this intuition to convert back to base 10 (<strong>base 2 to base 10</strong>): </p><figure id="e57de63e-1b75-412e-90a5-9e224df92617" class="equation"><style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><div class="equation-container"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msup><mn>1</mn><mo lspace="0em" rspace="0em">∗</mo></msup><mn>8</mn><mo>+</mo><msup><mn>0</mn><mo lspace="0em" rspace="0em">∗</mo></msup><mn>4</mn><mo>+</mo><msup><mn>1</mn><mo lspace="0em" rspace="0em">∗</mo></msup><mn>2</mn><mo>+</mo><msup><mn>1</mn><mo lspace="0em" rspace="0em">∗</mo></msup><mn>1</mn><mo>=</mo><mn>1</mn><msub><mn>1</mn><mn>10</mn></msub></mrow><annotation encoding="application/x-tex">1^{*} 8+0^{*} 4+1^{*} 2+1^{*} 1=11_{10}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.822026em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">1</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.738696em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">∗</span></span></span></span></span></span></span></span></span><span class="mord">8</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.822026em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">0</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.738696em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">∗</span></span></span></span></span></span></span></span></span><span class="mord">4</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.822026em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">1</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.738696em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">∗</span></span></span></span></span></span></span></span></span><span class="mord">2</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.738696em;vertical-align:0em;"></span><span class="mord"><span class="mord">1</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.738696em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">∗</span></span></span></span></span></span></span></span></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.79444em;vertical-align:-0.15em;"></span><span class="mord">1</span><span class="mord"><span class="mord">1</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">10</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></span></div></figure><p id="d0d9f4b5-26d8-4927-a954-5f5f458bae28" class="">Essentially, we take the index&#x27;s number place (e.g. ones, twos, fours, eights) and multiply it by the digit (0 or 1) at that place and sum up for each place.  </p><p id="62750696-8059-4e70-ac11-c955866c626c" class="">In base-2, the <strong>most-significant bit</strong> is the one furthest to the left and the <strong>least-significant bit</strong> is the one furthest to the right. </p><figure id="c237923d-054d-48af-a7de-cf3901e2e37d" class="image"><a href="Lecture%202%20Bits%20and%20Bytes;%20Integer%20Representations%2061aa4a6fc9c04ce389a5eb5200473cf9/Untitled%203.png"><img style="width:288px" src="Lecture%202%20Bits%20and%20Bytes;%20Integer%20Representations%2061aa4a6fc9c04ce389a5eb5200473cf9/Untitled%203.png"/></a></figure><h3 id="52c75ba7-ca7e-4d4b-afc4-7aa57c7d00c9" class="">Base 10 to Base 2</h3><p id="f2c77c8e-225e-491f-93b7-bcb67bb965ac" class="">B10 to B2 is a bit more tedious than the other way around (as described above). The strategy you want to use is as follows. </p><blockquote id="b8b93bd9-1ffa-492b-866c-f61d693d5f2c" class="">You want to ask yourself what is the largest power of 2 that is less than or equal to the base 10 digit you are trying to convert to base 2. Repeat this process until done. </blockquote><p id="b1bc4984-5d0b-41f3-812f-8989297cb337" class="">For example, if you have the number 6:</p><ol type="1" id="fe6f61b1-d9ed-4a3d-b6a5-41642b8bd7c9" class="numbered-list" start="1"><li>2 to the power of 2 is the largest power we can use to remain <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>≤</mo><mn>6</mn></mrow><annotation encoding="application/x-tex">\leq 6</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7719400000000001em;vertical-align:-0.13597em;"></span><span class="mrel">≤</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">6</span></span></span></span></span><span>﻿</span></span>: <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>2</mn></msup><mo>≤</mo><mn>6</mn></mrow><annotation encoding="application/x-tex">2^2 \leq 6</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.950078em;vertical-align:-0.13597em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">≤</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">6</span></span></span></span></span><span>﻿</span></span>. <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">2^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></span><span>﻿</span></span> is equal to 4 which means we place a 1 in the fours place of the binary digit. </li></ol><ol type="1" id="07098b8a-e49a-4f68-b854-b4ecf0e9c02e" class="numbered-list" start="2"><li>Now we ask: what is the largest power of 2 that satisfies <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mi>x</mi></msup><mo>≤</mo><mn>6</mn><mo>−</mo><msup><mn>2</mn><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">2^x \leq 6 - 2^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.800362em;vertical-align:-0.13597em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.664392em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">x</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">≤</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">6</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></span><span>﻿</span></span>. The answer is <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>1</mn></msup></mrow><annotation encoding="application/x-tex">2^1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span></span></span></span></span></span></span></span></span><span>﻿</span></span>.  <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>1</mn></msup></mrow><annotation encoding="application/x-tex">2^1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span></span></span></span></span></span></span></span></span><span>﻿</span></span> is equal to 2 which means we place a 1 in the twos place of the binary digit. We have accounted for everything in the number 6 so we now place 0s everywhere else: <code>0110</code>. </li></ol><ul id="ea1d3d78-0d5e-49ec-bd9d-b98b7c6e3888" class="bulleted-list"><li style="list-style-type:disc">Not relating to this specific subsection, but best placed here, multiplying by the base in a base number system adds a 0 to the number. For example, 10 * 10 is 100 which adds a 0 in base 10. Division removes a 0. </li></ul><hr id="2cde63b7-86a8-47fb-8289-26797008741e"/><h2 id="5d96316d-dddc-45f1-88c7-cfe421fc7db9" class="">Hexadecimal</h2><ul id="c8f9a925-f51a-4183-a271-2b99350ac3e1" class="bulleted-list"><li style="list-style-type:disc">Base 16. </li></ul><ul id="f7877d88-487b-450a-a55f-159d241ce1d9" class="bulleted-list"><li style="list-style-type:disc">For each nibble in binary: we take up 4 digits. We have 16 possible representations of base-10 digits (0-15). In hex, the numbers 0-15 using only one digit:<figure id="21f77435-1e2e-4489-8708-27924d28a68c" class="image"><a href="Lecture%202%20Bits%20and%20Bytes;%20Integer%20Representations%2061aa4a6fc9c04ce389a5eb5200473cf9/Untitled%204.png"><img style="width:2696px" src="Lecture%202%20Bits%20and%20Bytes;%20Integer%20Representations%2061aa4a6fc9c04ce389a5eb5200473cf9/Untitled%204.png"/></a></figure></li></ul><ul id="d0cbfc3c-251c-404d-9b3d-65e66dc7c24c" class="bulleted-list"><li style="list-style-type:disc">This is also useful because some 32 to 64 bit binary numbers is way too cumbersome to perform calculations on. </li></ul><ul id="30b23c09-0a35-4d3c-8b89-047b3f6013d5" class="bulleted-list"><li style="list-style-type:disc">To convert from hex to binary (or vise versa), simply use the map above (one hex digit should result in four binary digits). Start from the right for binary to hex (and fill in any leading zeroes for making the conversion easier).  </li></ul><h3 id="88013bbf-5483-4fc0-ad73-90253fa399ad" class="">Prefixing</h3><p id="d066a377-1e2c-41f4-80c6-4176bedbba11" class="">So how do we know what number system a digit belongs to? We use prefixes. </p><ul id="417c7a5c-3504-43bb-9f56-5025ca33513a" class="bulleted-list"><li style="list-style-type:disc"><code>0b</code> for binary (e.g. <code>0b1010</code>). </li></ul><ul id="d4a398ce-dfc6-4d56-8ca9-b8c084f67690" class="bulleted-list"><li style="list-style-type:disc"><code>0x</code> for hex (e.g. <code>0xf</code>). </li></ul><hr id="5d88cd13-7c0d-4783-867e-4ecd18f58dff"/><h2 id="70234be5-c6d5-486c-9854-1d68961f32a7" class="">Integer representations and unsigned integers</h2><p id="ddaa96d9-553e-4a97-85a8-bd9b707f84ca" class="">Now that we understand fundamental number systems, how can we represent integers under the hood in a computer? Everything needs to come down to binary eventually. We will look at unsigned and signed integers. </p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="d9d193d3-18f3-41ab-9cbe-80fc10512d62"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%"><strong>Unsigned integers</strong>: A positive (or 0) integer (no negatives). </div></figure><ul id="08e386bd-4945-4be5-a437-ddc4923b904c" class="bulleted-list"><li style="list-style-type:disc">Fortunately, unsigned integers in base-10 convert to binary in the same way as we learned about above—it is a simple 1:1 conversion. </li></ul><p id="a4b8f923-7198-4568-ba67-2061cd4f09d1" class="">Now what about negative integers? For that we have:</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="758d1b6a-ed43-4c8e-af49-edbf954eb2e7"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%"><strong>Signed integers</strong>: A positive, negative, or 0 integer. </div></figure><p id="86101047-1c86-455b-9ffc-d5ab77434bd2" class="">So how can we represent both negative and positive numbers in binary? </p><p id="402ccb4d-dac3-4bb8-bd45-2d3593e820f0" class="">One idea is... </p><h3 id="0fed57cf-06b6-42a0-b86c-297b94429dca" class="">Sign magnitude representation</h3><p id="752dd856-1497-4df4-b479-9e45beac560e" class="">The idea is to allocate the most-significant bit to represent the sign. </p><figure id="c955f3e9-aec6-4178-992d-fc6017f7e399" class="image"><a href="Lecture%202%20Bits%20and%20Bytes;%20Integer%20Representations%2061aa4a6fc9c04ce389a5eb5200473cf9/Untitled%205.png"><img style="width:108px" src="Lecture%202%20Bits%20and%20Bytes;%20Integer%20Representations%2061aa4a6fc9c04ce389a5eb5200473cf9/Untitled%205.png"/></a></figure><p id="f45a420c-f750-4727-a79f-20980c8f4a8c" class="">A problem arises because we now have both a positive and negative representation of 0. Another problem is that it takes one more bit than necessary to store a number. Arithmetic is also trickier in this representation. </p><h3 id="91707434-ba65-4871-973a-7cfc689732da" class="">Two&#x27;s compliment</h3><p id="f2d55c20-52ea-4a13-b07e-ff8c1d843586" class="">So how can we fix the shortcomings of sign magnitude representation? Through the two&#x27;s compliment system. </p><p id="025828d2-1ca7-4bdc-a440-c6d191f35c9a" class="">Before we get started, it is important to note something about <strong>binary addition</strong>. What even is binary addition? Well it is the same as adding up any kind of number the grade school way with one small caveat. We can only get a binary number that results in 0s and 1s. So if we have a result that equates to &gt; 1, we carry the 1 over to the next place. If this occurs in the most-significant bit place, the 1 falls off the edge and the result in that place is a 0. </p><p id="5f6dc6b1-ac30-4db9-b18c-7d71a3f1b678" class="">In this system, we can map each positive number to its corresponding negative number while retaining the same number of bits. The algorithm for yielding a positive&#x27;s number&#x27;s negative compliment is as follows:</p><ol type="1" id="9f78e926-d9d4-4882-ae7c-3f72a45dd095" class="numbered-list" start="1"><li>Invert the binary number.</li></ol><ol type="1" id="bd502fcd-9b6a-4ec5-af47-de688f733c8b" class="numbered-list" start="2"><li>Add 1 to this inversion. </li></ol><p id="e27b977e-9259-4c8f-b1b2-28d9737109e1" class="">The pattern is that we want a positive number plus its negative number to equate to 0. Inverting the binary number makes the sum all 1s. Adding 1 to this makes all of the 1s fall of the edge so we end up getting all 0s. </p><p id="bccbeb8c-8d42-4fdc-9dd4-f1b2230fbac1" class="">All of the cons from sign magnitude representation become pros in two&#x27;s compliment. Specifically, arithmetic operations map to what they would equal in base-10. </p><hr id="8d9bc072-c79e-4157-9d94-da941ab7ae6e"/><h2 id="5adc4604-a284-47ce-bb84-ae86dedbadd5" class="">Overflow</h2><p id="90087227-6d12-4751-9456-7b9210a66627" class="">Remember how we talked about how adding 1 to a number sometimes results in the 1 falling off of the edge? Formally this is called overflow. </p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="f8208138-a8f0-48e4-9212-4fd982be18bf"><div style="font-size:1.5em"><span class="icon">❕</span></div><div style="width:100%"><strong>Overflow</strong>: If you exceed the maximum value of your bit representation, you wrap around or overflow back to the smallest bit representation. </div></figure><p id="8c1a4bde-c917-42e7-ac1d-950f5fc02587" class="">For example, say we allocate space for a 4-bit number (in practice, we have data types (e.g. int, long, short) that all have min and max values based on how much bits  they take up). We initiate that number with the binary digit <code>1111</code>. If we add 1 to it, we would get <code>10000</code>, but we only are allowed 4 bits. Thus, we have an overflow and we wrap around to the smallest 4-bit representation which is <code>0000</code>. </p><p id="06ba9596-1e2c-4fd0-aec3-9c68aca2f3e6" class="">This holds for reverse: min - 1 wraps back to max. </p><hr id="319d2492-3889-4c08-a14f-58b137df62ca"/><h2 id="09ecaa9a-ac5e-49e6-9d63-d3dfe0a0a94a" class="">Casting and Combining Types</h2><p id="3058dcee-5198-4f0f-8e3b-8454e36e6132" class="">One thought you might have had in discussing the two&#x27;s compliment system is that there may be a binary number that represents what it represents but also some other unsigned number equivalent. Thus, in practice, we must specify the type (whether it is unsigned or signed) when working with integers. Examples (look at left-hand side). </p><figure id="2dcb29fe-e8b2-447a-b8fb-93a2f9284103" class="image"><a href="Lecture%202%20Bits%20and%20Bytes;%20Integer%20Representations%2061aa4a6fc9c04ce389a5eb5200473cf9/Untitled%206.png"><img style="width:384px" src="Lecture%202%20Bits%20and%20Bytes;%20Integer%20Representations%2061aa4a6fc9c04ce389a5eb5200473cf9/Untitled%206.png"/></a></figure><ul id="e0d4a0f3-ccd7-4f29-acff-7083a2dc9715" class="bulleted-list"><li style="list-style-type:disc">When comparing integers, if the integers are of same type, the comparison happens as usual. However, if one is of unsigned type and the other is of signed type, for the purposes of comparison, the signed one will be casted to unsigned and then compared. </li></ul><ul id="3bb131f9-e1ef-424e-bdc4-870bc2da9c64" class="bulleted-list"><li style="list-style-type:disc">Sometimes we will also want to compare integers that are of two different data types (i.e. short and long). We can cast the short to the long to do the comparison. In doing so, in binary, we add leading zeroes if the short is unsigned. For signed, we add either leading 1s if negative or 0s if positive. <ul id="3d92e0a3-8c04-4330-a397-28db756d6ae8" class="bulleted-list"><li style="list-style-type:circle">It is dangerous to go from a big to small data type. C truncates the most significant bits. </li></ul></li></ul><ul id="009b3e3e-f76d-48bb-9958-eee3b56ccc01" class="bulleted-list"><li style="list-style-type:disc">We can use the <code>sizeof()</code> command in C to get the amount of bytes of a certain data type. </li></ul></div></article></body></html>
